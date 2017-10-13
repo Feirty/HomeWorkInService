@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="HomeWork"
+  id="myeclipse.1498884714775"
+  context-root="/HomeWork"
+  j2ee-spec="6.0"
+  archive="HomeWork.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+
