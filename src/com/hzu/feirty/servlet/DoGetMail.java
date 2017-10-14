@@ -248,6 +248,7 @@ public class DoGetMail extends HttpServlet {
 		 */
 		else if(action.equals("RECEIVEHOMEWORK")){
 			try {
+				String course = request.getParameter("course");
 				String type=new UserDaoImpl().SearchType(user);
 				if(type.equals("teacher")){
 					Teacher teacher = new TeacherDaoImpl().find2(user);
@@ -257,10 +258,9 @@ public class DoGetMail extends HttpServlet {
 						//作业匹配下载				
 						String docsPath = request.getSession().getServletContext().getRealPath("docs"+date);
 						//  i为作业的数量
-						int i = MailReceive.getAllMailByTeacher2(user,docsPath);
+						int i = MailReceive.getAllMailByTeacher2(user,course,docsPath);
 						if(i>0){
-							String worknumber=String.valueOf(i);
-							array.put("code", "success");
+							String worknumber=String.valueOf(i);					
 							String imagesPath = request.getSession().getServletContext().getRealPath("images");
 							(new ExportExcel()).test(imagesPath, docsPath);
 							String zipsPath = request.getSession().getServletContext().getRealPath("zips");
@@ -268,7 +268,7 @@ public class DoGetMail extends HttpServlet {
 							File zipFilePath=new File(zipsPath);
 							String fileName="作业附件";									
 							//作业压缩zip
-							MailToZip.mailToZip(sourceFilePath.toString(), zipFilePath.toString(), fileName+date);
+							MailToZip.mailToZip(sourceFilePath.toString(), zipFilePath.toString(), course+fileName+date);
 							System.out.println("作业打包成功！");
 							File zippath = new File(zipFilePath.toString()+"\\"+fileName+date+".zip");
 							String attachments = zippath.toString();
@@ -291,6 +291,7 @@ public class DoGetMail extends HttpServlet {
 	            			//统计作业的提交情况
 	            			Construction construction = new Construction(user, filenumber, zip_name, zip_size,sendtime);
 	            			constructionDaoImpl.inSert(construction);
+	            			array.put("code", "success");
 							array.put("msg", "作业打包发送成功");
 							array.put("zipname",zip_name);
 							array.put("number", worknumber);

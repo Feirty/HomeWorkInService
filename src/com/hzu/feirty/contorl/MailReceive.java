@@ -295,7 +295,7 @@ public class MailReceive {
         }		
 	}
 	
-	public static int  getAllMailByTeacher2(String name,String docsPath) throws Exception{
+	public static int  getAllMailByTeacher2(String name,String course,String docsPath) throws Exception{
 		List<Email> mailList = new ArrayList<Email>();
 		TeacherDaoImpl tDao = new TeacherDaoImpl();
 		String number="";
@@ -329,33 +329,38 @@ public class MailReceive {
                 	}else{
                 		number ="";
                 	}
-                	if(!number.equals("")&& new StudentDaoImpl().isNumber(name, number)){
-                		if(pmm.isContainAttach((Part)messages[i])){
-                			File file=new File(docsPath);
-                			if(!file.exists()){
-                				file.mkdirs();
-                			}
-                			//得到发送时间
-                			Date sd =pmm.getSentDate2();
-                			java.sql.Timestamp sendtime = new java.sql.Timestamp(sd.getTime());
-                			pmm.setAttachPath(file.toString());
-                			pmm.saveAttachMent((Part)messages[i]);
-                			//得到文件名
-                			String filename =pmm.getFilename();
-                			File path = new File(file.toString()+"\\"+filename);
-                			//计算作业文件大小
-                			GetFileSize getFileSize = new GetFileSize();
-                			String filesize =getFileSize.FormetFileSize(getFileSize.getFileSizes(path));         			           		
-                			//将作业得学号、文件名、文件大小、发送时间存入homework表中
-                			HomeWorkDaoImpl HomeWorkDaoImpl = new HomeWorkDaoImpl();
-                			HomeWork homework =new HomeWork(number,filename,filesize,sendtime,1);
-                			HomeWorkDaoImpl.inSert(homework);
-                			shu++;
-                		}
+                	if(!number.equals("")){
+                		String course1 = str.substring(str.indexOf("[") + 1, str.indexOf("]"));
+                 		if(course.equals(course1)&&new StudentDaoImpl().isExit(name,number,course)){                	
+	                		if(pmm.isContainAttach((Part)messages[i])){
+	                			File file=new File(docsPath);
+	                			if(!file.exists()){
+	                				file.mkdirs();
+	                			}
+	                			//得到发送时间
+	                			Date sd =pmm.getSentDate2();
+	                			java.sql.Timestamp sendtime = new java.sql.Timestamp(sd.getTime());
+	                			pmm.setAttachPath(file.toString());
+	                			pmm.saveAttachMent((Part)messages[i]);
+	                			//得到文件名
+	                			String filename =pmm.getFilename();
+	                			File path = new File(file.toString()+"\\"+filename);
+	                			//计算作业文件大小
+	                			GetFileSize getFileSize = new GetFileSize();
+	                			String filesize =getFileSize.FormetFileSize(getFileSize.getFileSizes(path));         			           		
+	                			//将作业得学号、文件名、文件大小、发送时间存入homework表中
+	                			HomeWorkDaoImpl HomeWorkDaoImpl = new HomeWorkDaoImpl();
+	                			HomeWork homework =new HomeWork(number,filename,filesize,sendtime,1);
+	                			HomeWorkDaoImpl.inSert(homework);
+	                			shu++;
+	                		}
+                 		}             		
                 	}
                     mailList.add(mail);// 添加到邮件列表中            	
             		}
             	}
+            folder.close(true);
+            store.close();
             return shu;
             }      
 	}
