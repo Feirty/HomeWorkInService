@@ -47,12 +47,6 @@ public class DoGetMail extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 	}
-		
-/**
- * 邮件处理类
- * 
- * 
- */	
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setCharacterEncoding("utf-8");
@@ -65,12 +59,13 @@ public class DoGetMail extends HttpServlet {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String time = sdf.format(new Date());
 		if(action.equals("send")){
-			String subject = "[任务]"+request.getParameter("subject");
-			String content = request.getParameter("content");
+			String course = request.getParameter("course");
+			String subject = "[课程:"+course+"]"+request.getParameter("subject");
+			String content = request.getParameter("content");	
 			try {
 				Teacher teacher =new TeacherDaoImpl().find2(user);
 				MailSenter mailsend =new MailSenter("smtp.qq.com",teacher.getMail_name(), teacher.getMail_pwd());
-				mailsend.send(teacher.getMail_name(),subject,content);
+				mailsend.send(teacher.getMail_name(),subject,content);				
 				array.put("code", "success");
 				array.put("msg", "发送成功");
 				array.put("data", "");
@@ -270,18 +265,18 @@ public class DoGetMail extends HttpServlet {
 							//作业压缩zip
 							MailToZip.mailToZip(sourceFilePath.toString(), zipFilePath.toString(), course+fileName+date);
 							System.out.println("作业打包成功！");
-							File zippath = new File(zipFilePath.toString()+"\\"+fileName+date+".zip");
+							File zippath = new File(zipFilePath.toString()+"\\"+course+fileName+date+".zip");
 							String attachments = zippath.toString();
 							String mailname = teacher.getMail_name();
 							String mailpwd = teacher.getMail_pwd();
 							String peason_mail = teacher.getPeasonmail();					
 							 // 作业压缩文件发送 
 							MailSenter mailsend =new MailSenter("smtp.qq.com", mailname, mailpwd);					
-							mailsend.send(peason_mail,fileName+date,fileName+date,attachments,"收发作业系统");
+							mailsend.send(peason_mail,course+fileName+date,fileName+date,attachments,"收发作业系统");
 							System.out.println("作业打包文件发送成功！");
 	            			GetFileSize getFileSize = new GetFileSize();
 	            			String zip_size =getFileSize.FormetFileSize(getFileSize.getFileSizes(zippath));
-	            			String zip_name = fileName+date+".zip";
+	            			String zip_name = course+fileName+date+".zip";
 	            			GetFileSize g = new GetFileSize();
 	            			long filenumber= g.getlist(sourceFilePath);            			            			
 	            			String datestring =sdf.format(new Date());

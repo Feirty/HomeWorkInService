@@ -3,6 +3,7 @@ package com.hzu.feirty.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.mail.Store;
 import javax.servlet.ServletException;
@@ -10,9 +11,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import com.hzu.feirty.contorl.MailReceive;
+import com.hzu.feirty.dao.SchoolDaoImpl;
 import com.hzu.feirty.dao.StudentDaoImpl;
 import com.hzu.feirty.dao.TeacherDaoImpl;
 import com.hzu.feirty.dao.UserDaoImpl;
@@ -35,14 +38,14 @@ public class DoGetStudent extends HttpServlet {
 		response.setCharacterEncoding("utf-8");
 		request.setCharacterEncoding("utf-8");
 		String action = request.getParameter("action");
+		String username = request.getParameter("user");
 		PrintWriter out = response.getWriter();
 		JSONObject array = new JSONObject();
 		if(action.equals("SAVESET")){
 			String teacher = request.getParameter("teacher");
 			String school = request.getParameter("school");
 			String number = request.getParameter("number");
-			String peasonmail = request.getParameter("mail");
-			String username = request.getParameter("user");
+			String peasonmail = request.getParameter("mail");	
 			TeacherDaoImpl teaDao = new TeacherDaoImpl();
 			StudentDaoImpl stuDao = new StudentDaoImpl();
 			try {
@@ -86,6 +89,22 @@ public class DoGetStudent extends HttpServlet {
 			}catch (SQLException e1) {		
 					e1.printStackTrace();
 				}		
+		} else if(action.equals("queryStudent")){
+			JSONArray arrays = new JSONArray();	
+			String course = request.getParameter("course");		
+			List<String> list = new StudentDaoImpl().QueryStudent(username,course);
+			if(!list.equals(null)){
+				for(int i=0;i<list.size();i++){
+					JSONObject object = new JSONObject();
+					object.put("school", list.get(i));
+					arrays.add(object);
+				}
+				array.put("schools", arrays.toString());
+				array.put("code", "success");					
+			}else{
+				array.put("code", "queryStudentNull");
+			}
+					 						
 		}
 		out.print(array);
 		out.flush();

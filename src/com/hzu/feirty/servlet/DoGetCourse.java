@@ -85,6 +85,27 @@ public class DoGetCourse extends HttpServlet {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}	
+		}else if(action.equals("queryCourse")){
+			JSONArray arrays = new JSONArray();	
+			try {
+				List<String> list = new CourseDaoImpl().QueryCourse();
+				if(!list.equals(null)){
+					for(int i=0;i<list.size();i++){
+						JSONObject object = new JSONObject();
+						object.put("course", list.get(i));
+						arrays.add(object);
+					}
+					array.put("courses", arrays.toString());
+					array.put("code", "success");					
+				}else{
+					array.put("code", "queryCourseNull");
+				}
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}	
 		out.print(array);
 		out.flush();

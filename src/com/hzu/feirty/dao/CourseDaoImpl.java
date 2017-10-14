@@ -90,14 +90,13 @@ public class CourseDaoImpl extends BaseDaoImpl{
 			return -1;
 		}
 	}
-	public List Query() throws SQLException{
+	public List<String> QueryCourse() throws SQLException{
 		conn = this.getConnection();
-		pstmt = conn.prepareStatement("select * from course");
+		pstmt = conn.prepareStatement("select name from course");
 		rs = pstmt.executeQuery();
-		while(rs.next()){
-			   Course course = new Course();
-			   course.setName(rs.getString(2));  
-			   list.add(course);
+		List<String> list = new ArrayList<String>();
+		while(rs.next()){		 
+			   list.add(rs.getString(2));
 		}
 		return list;
 	}

@@ -13,7 +13,6 @@ public class StudentDaoImpl extends BaseDaoImpl {
 	PreparedStatement pstmt = null;
 	ResultSet rs = null;
 	Connection conn = null;
-	
    public StudentDaoImpl(){
 		super();
 	}
@@ -200,5 +199,29 @@ public class StudentDaoImpl extends BaseDaoImpl {
 		} finally {
 			this.closeAll(rs, pstmt, conn);
 		}
+	}
+	
+	/**
+	 * 查询某用户是否存在，根据teacher
+	 *
+	 * @return
+	 */
+	public List<String> QueryStudent(String teacher,String course) {
+		conn = this.getConnection();
+		//Student content = null;
+		try {
+			pstmt = conn.prepareStatement("select * from student where teacher='"+ teacher + "'and course='"+course+"'");
+			rs = pstmt.executeQuery();
+			List<String> list = new ArrayList<String>();
+			while(rs.next()) {
+				list.add(rs.getString("number"));
+			}
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			this.closeAll(rs, pstmt, conn);
+		}
+		return null;
 	}
 }

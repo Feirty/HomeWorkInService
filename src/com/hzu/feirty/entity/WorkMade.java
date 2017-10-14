@@ -6,12 +6,23 @@ public class WorkMade {
 	private String work_content;
 	private String arrange_time;
 	private String teacher_name;
+	private String course_name;
+	private String work_number;
 	
+	public WorkMade(){
+		super();
+	}
 	public WorkMade(String workname,String content,String time,String teaname){
 		this.work_name = workname;
 		this.work_content = content;
 		this.arrange_time = time;
 		this.teacher_name = teaname;		
+	}
+	public String getWork_number() {
+		return work_number;
+	}
+	public void setWork_number(String work_number) {
+		this.work_number = work_number;
 	}
 	
 	public int getId() {
@@ -43,6 +54,14 @@ public class WorkMade {
 	}
 	public void setTeacher_name(String teacher_name) {
 		this.teacher_name = teacher_name;
+	}
+	
+	public String getCourse_name() {
+		return course_name;
+	}
+
+	public void setCourse_name(String course_name) {
+		this.course_name = course_name;
 	}
 
 }

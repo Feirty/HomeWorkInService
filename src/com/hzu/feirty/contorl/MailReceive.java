@@ -237,18 +237,22 @@ public class MailReceive {
             	Email mail = new Email();
              	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);
              	String str=pmm.getSubject();  
-             	if(pmm.getSubject().contains("[任务]")){
-            	mail.setSubject(pmm.getSubject());
-            	System.out.println(pmm.getSubject());
-            	pmm.getMailContent((Part)messages[i]);
-            	mail.setContent(pmm.getBodyText());
-            	System.out.println(pmm.getBodyText());
-            	pmm.setDateFormat("yy.MM.dd-HH:mm");
-            	mail.setSentdata(pmm.getSentDate());
-            	mail.setMessageID(pmm.getMessageId());
-            	EmailDaoImpl eDaoImpl =new EmailDaoImpl();
-            	eDaoImpl.Insert(mail);
-                mailList.add(mail);// 添加到邮件列表中
+             	if(pmm.getSubject().contains("[课程:")){
+             		String course = str.substring(str.indexOf(":") + 1, str.indexOf("]"));
+             		String sub = pmm.getSubject();
+             		String subject = sub.substring(sub.indexOf("]")+1);
+	            	mail.setSubject(subject);
+	            	System.out.println(pmm.getSubject());
+	            	pmm.getMailContent((Part)messages[i]);
+	            	mail.setContent(pmm.getBodyText());
+	            	System.out.println(pmm.getBodyText());
+	            	mail.setCourse(course);
+	            	pmm.setDateFormat("yy.MM.dd-HH:mm");
+	            	mail.setSentdata(pmm.getSentDate());
+	            	mail.setMessageID(pmm.getMessageId());
+	            	EmailDaoImpl eDaoImpl =new EmailDaoImpl();
+	            	eDaoImpl.Insert(mail);
+	                mailList.add(mail);// 添加到邮件列表中
              	}
             }
             return mailList;
@@ -278,23 +282,27 @@ public class MailReceive {
              	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);
              	//pmm.getSubject().contains("[作业]") ||pmm.getSubject().contains("[布置作业]"
              	String str=pmm.getSubject();  
-             	if(pmm.getSubject().contains("[任务]")){
-            	mail.setSubject(pmm.getSubject());
-            	System.out.println(pmm.getSubject());
-            	pmm.getMailContent((Part)messages[i]);        
-            	mail.setContent(pmm.getBodyText());
-            	System.out.println(pmm.getBodyText());
-            	pmm.setDateFormat("yy.MM.dd-HH:mm");
-            	mail.setSentdata(pmm.getSentDate());          
-            	EmailDaoImpl eDaoImpl =new EmailDaoImpl();
-            	eDaoImpl.Insert(mail);
-                mailList.add(mail);// 添加到邮件列表中
+             	if(pmm.getSubject().contains("[课程:")){
+             		String course = str.substring(str.indexOf(":") + 1, str.indexOf("]"));
+             		String sub = pmm.getSubject();
+             		String subject = sub.substring(sub.indexOf("]")+1);
+	            	mail.setSubject(subject);
+	            	System.out.println(pmm.getSubject());
+	            	pmm.getMailContent((Part)messages[i]);        
+	            	mail.setContent(pmm.getBodyText());
+	            	mail.setCourse(course);
+	            	System.out.println(pmm.getBodyText());
+	            	pmm.setDateFormat("yy.MM.dd-HH:mm");
+	            	mail.setSentdata(pmm.getSentDate());          
+	            	EmailDaoImpl eDaoImpl =new EmailDaoImpl();
+	            	eDaoImpl.Insert(mail);
+	                mailList.add(mail);// 添加到邮件列表中
              	}
             }
             return mailList;
         }		
 	}
-	
+
 	public static int  getAllMailByTeacher2(String name,String course,String docsPath) throws Exception{
 		List<Email> mailList = new ArrayList<Email>();
 		TeacherDaoImpl tDao = new TeacherDaoImpl();
@@ -350,7 +358,7 @@ public class MailReceive {
 	                			String filesize =getFileSize.FormetFileSize(getFileSize.getFileSizes(path));         			           		
 	                			//将作业得学号、文件名、文件大小、发送时间存入homework表中
 	                			HomeWorkDaoImpl HomeWorkDaoImpl = new HomeWorkDaoImpl();
-	                			HomeWork homework =new HomeWork(number,filename,filesize,sendtime,1);
+	                			HomeWork homework =new HomeWork(number,filename,filesize,sendtime,course,1);
 	                			HomeWorkDaoImpl.inSert(homework);
 	                			shu++;
 	                		}

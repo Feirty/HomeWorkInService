@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import com.hzu.feirty.entity.School;
 
@@ -48,15 +49,13 @@ public class SchoolDaoImpl extends BaseDaoImpl {
 		 * 查找总数
 		 * 
 		 */
-	public List Query() throws SQLException{
+	public List<String> QuerySchool() throws SQLException{
 		conn = this.getConnection();
-		pstmt = conn.prepareStatement("select * from school");
+		pstmt = conn.prepareStatement("select name from school");
 		rs = pstmt.executeQuery();
-		while(rs.next()){
-			   School school=new School();
-			   school.setId(rs.getInt(1));
-			   school.setName(rs.getString(2));  
-			   list.add(school);
+		List<String> list = new ArrayList<String>();
+		while(rs.next()){			 
+			   list.add(rs.getString("name"));
 		}
 		return list;
 	}	

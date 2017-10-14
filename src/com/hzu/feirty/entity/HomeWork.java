@@ -8,16 +8,18 @@ public class HomeWork {
 	private String file_name;
 	private String file_size;
 	private Timestamp file_time;
+	private String course_name;
 	private int file_number;
 	public HomeWork(){
 		super();
 	}
-	public HomeWork(String stu_id,String file_name,String file_size,Timestamp file_time,int file_number){
+	public HomeWork(String stu_id,String file_name,String file_size,Timestamp file_time,String course_name,int file_number){
 		this.stu_id =stu_id;
 		this.file_name =file_name;
 		this.file_size =file_size;
 		this.file_time = file_time;	
 		this.file_number = file_number; 
+		this.course_name = course_name;
 	}
 	
 	public int getFile_number() {
@@ -56,6 +58,12 @@ public class HomeWork {
 	}
 	public void setFile_size(String file_size) {
 		this.file_size = file_size;
+	}
+	public String getCourse_name() {
+		return course_name;
+	}
+	public void setCourse_name(String course_name) {
+		this.course_name = course_name;
 	}
 
 }

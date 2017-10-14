@@ -24,18 +24,18 @@ public class HomeWorkDaoImpl extends BaseDaoImpl{
 		conn = this.getConnection();
 		if(true){    //!isExist(homework.getStu_id())
 			try {
-				pstmt = conn.prepareStatement("insert into homework(stu_id,file_name,file_size,file_time,file_number)values(?,?,?,?,?)");
+				pstmt = conn.prepareStatement("insert into homework(stu_id,file_name,file_size,file_time,course_name,file_number)values(?,?,?,?,?,?)");
 				pstmt.setString(1, homework.getStu_id());
 				pstmt.setString(2, homework.getFile_name());
 				pstmt.setString(3, homework.getFile_size());
 				pstmt.setTimestamp(4, homework.getFile_time());
-				pstmt.setInt(5, homework.getFile_number());
+				pstmt.setString(5, homework.getCourse_name());
+				pstmt.setInt(6, homework.getFile_number());
 				pstmt.executeUpdate();
 				return true;
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return false;
+				e.printStackTrace();			
 			}finally {
 				this.closeAll(null, pstmt, conn);
 			}			
@@ -77,7 +77,8 @@ public class HomeWorkDaoImpl extends BaseDaoImpl{
 				homework.setFile_name(rs.getString(3));
 				homework.setFile_size(rs.getString(4));
 				homework.setFile_time(rs.getTimestamp(5));
-				homework.setFile_number(rs.getInt(6));
+				homework.setCourse_name(rs.getString(6));
+				homework.setFile_number(rs.getInt(7));
 				homeworklist.add(homework);
 				}
 			
