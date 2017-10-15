@@ -89,17 +89,17 @@ public class DoGetStudent extends HttpServlet {
 			}catch (SQLException e1) {		
 					e1.printStackTrace();
 				}		
-		} else if(action.equals("queryStudent")){
+		} else if(action.equals("findstudent")){
 			JSONArray arrays = new JSONArray();	
 			String course = request.getParameter("course");		
-			List<String> list = new StudentDaoImpl().QueryStudent(username,course);
+			List<Student> list = new StudentDaoImpl().QueryStudent(username,course);
 			if(!list.equals(null)){
 				for(int i=0;i<list.size();i++){
 					JSONObject object = new JSONObject();
-					object.put("school", list.get(i));
+					object.put("number", list.get(i).getNumber());
 					arrays.add(object);
 				}
-				array.put("schools", arrays.toString());
+				array.put("students", arrays.toString());
 				array.put("code", "success");					
 			}else{
 				array.put("code", "queryStudentNull");

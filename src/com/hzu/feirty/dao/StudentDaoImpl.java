@@ -206,15 +206,18 @@ public class StudentDaoImpl extends BaseDaoImpl {
 	 *
 	 * @return
 	 */
-	public List<String> QueryStudent(String teacher,String course) {
+	public List<Student> QueryStudent(String teacher,String course) {
 		conn = this.getConnection();
 		//Student content = null;
 		try {
 			pstmt = conn.prepareStatement("select * from student where teacher='"+ teacher + "'and course='"+course+"'");
 			rs = pstmt.executeQuery();
-			List<String> list = new ArrayList<String>();
+			List<Student> list = new ArrayList<Student>();
 			while(rs.next()) {
-				list.add(rs.getString("number"));
+				Student student = new Student();
+				student.setName(rs.getString(2));
+				student.setNumber(rs.getString(3));
+				list.add(student);
 			}
 			return list;
 		} catch (SQLException e) {
