@@ -96,7 +96,7 @@ public class CourseDaoImpl extends BaseDaoImpl{
 		rs = pstmt.executeQuery();
 		List<String> list = new ArrayList<String>();
 		while(rs.next()){		 
-			   list.add(rs.getString(2));
+			   list.add(rs.getString("name"));
 		}
 		return list;
 	}

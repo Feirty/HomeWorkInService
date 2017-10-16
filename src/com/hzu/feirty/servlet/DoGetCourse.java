@@ -96,7 +96,9 @@ public class DoGetCourse extends HttpServlet {
 						arrays.add(object);
 					}
 					array.put("courses", arrays.toString());
-					array.put("code", "success");					
+					array.put("code", "success");
+					System.out.println("响应课程请求");
+										
 				}else{
 					array.put("code", "queryCourseNull");
 				}

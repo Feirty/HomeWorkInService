@@ -65,14 +65,12 @@ public class DoGetStudent extends HttpServlet {
 							array.put("code", "success");
 							array.put("msg", "发送成功");
 							array.put("mail",mail);
-							array.put("pwd", pwd);
-							array.put("data", "");
+							array.put("pwd", pwd);					
 							System.out.println("发送成功！");
 						} catch (Exception e) {
 							e.printStackTrace();
 							array.put("code", "succ");
 							array.put("msg", "发送失败");
-							array.put("data", "");
 							System.out.println("发送失败！");
 						}						
 					}else{
@@ -83,7 +81,6 @@ public class DoGetStudent extends HttpServlet {
 					}else{
 						array.put("code", "succ");
 						array.put("msg", "失败");
-						array.put("data", "");
 						System.out.println("发送失败！");	
 					}
 			}catch (SQLException e1) {		
@@ -99,12 +96,12 @@ public class DoGetStudent extends HttpServlet {
 					object.put("number", list.get(i).getNumber());
 					arrays.add(object);
 				}
-				array.put("students", arrays.toString());
-				array.put("code", "success");					
+				array.put("student", arrays.toString());
+				array.put("code", "success");
+				System.out.println("学生信息发送成功");
 			}else{
 				array.put("code", "queryStudentNull");
-			}
-					 						
+			}			 						
 		}
 		out.print(array);
 		out.flush();

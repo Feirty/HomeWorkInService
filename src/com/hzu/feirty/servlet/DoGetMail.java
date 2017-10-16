@@ -82,17 +82,18 @@ public class DoGetMail extends HttpServlet {
 			try {
 				String str =new UserDaoImpl().SearchType(user);				
                 //老师部分，作业邮件内容接收
-				if(str.equals("teacher")){
+				if(str.equals("teacher")){				
 					maillist = MailReceive.getAllReceiveWorkT(user);
-					CourseDaoImpl courseDaoImpl = new CourseDaoImpl();
-					int stu_number= courseDaoImpl.findNumber(user,"大学物理");
-					array.put("code", "success");
-					array.put("number", ""+stu_number);
+					CourseDaoImpl courseDaoImpl = new CourseDaoImpl();		
+					array.put("code", "success");		
 					array.put("msg", "11");	
 					for (int i = 0; i < maillist.size(); i++) {
 						JSONObject object = new JSONObject();
+						int stu_number= courseDaoImpl.findNumber(user,maillist.get(i).getCourse());
+						object.put("course", maillist.get(i).getCourse());
 						object.put("subject", maillist.get(i).getSubject());
-						object.put("content", maillist.get(i).getContent());
+						object.put("content", maillist.get(i).getContent());		
+						object.put("stu_number",""+stu_number);
 						object.put("time", maillist.get(i).getSentdata());
 						arrays.add(object);
 					}
