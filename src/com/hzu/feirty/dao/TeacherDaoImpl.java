@@ -18,7 +18,7 @@ public class TeacherDaoImpl extends BaseDaoImpl {
 	 public boolean add(Teacher user) throws Exception{
 		 conn = this.getConnection();
 		 try {
-			 String sql = "insert into mailbyuser(user_teacher,mail_name,mail_pwd,peasonmail,school,nickname) values (?,?,?,?,?,?) ";
+			 String sql = "insert into teacher(user_teacher,mail_name,mail_pwd,peasonmail,school,nickname) values (?,?,?,?,?,?) ";
 			 pstmt = conn.prepareStatement(sql);
 			 pstmt.setString(1,user.getUser_teacher());
 			 pstmt.setString(2,user.getMail_name());
@@ -39,7 +39,7 @@ public class TeacherDaoImpl extends BaseDaoImpl {
 	//查找
 	public boolean find(String name) throws SQLException{
 		conn = this.getConnection();
-		pstmt = conn.prepareStatement("select * from mailbyuser where user_teacher='" + name + "'");
+		pstmt = conn.prepareStatement("select * from teacher where user_teacher='" + name + "'");
 		rs = pstmt.executeQuery();
 		if (rs.next()) {
 			return true;
@@ -56,7 +56,7 @@ public class TeacherDaoImpl extends BaseDaoImpl {
 	 */
 	public Teacher find2(String name) throws SQLException{
 		conn = this.getConnection();
-		pstmt = conn.prepareStatement("select * from mailbyuser where nickname='" + name + "'");
+		pstmt = conn.prepareStatement("select * from teacher where nickname='" + name + "'");
 		rs = pstmt.executeQuery();
 		if (rs.next()) {
 			Teacher tea =new Teacher();
