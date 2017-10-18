@@ -25,8 +25,6 @@ import com.hzu.feirty.entity.User;
 import com.hzu.feirty.utils.ConnUtil;
 
 public class DoGetStudent extends HttpServlet {
-	private String mail;
-	private String pwd;
 	public DoGetStudent() {
 		super();
 	}
@@ -45,14 +43,11 @@ public class DoGetStudent extends HttpServlet {
 			String teacher = request.getParameter("teacher");
 			String school = request.getParameter("school");
 			String number = request.getParameter("number");
-			String peasonmail = request.getParameter("mail");	
-			TeacherDaoImpl teaDao = new TeacherDaoImpl();
+			String course = request.getParameter("course");
+			String peasonmail = request.getParameter("mail");		
 			StudentDaoImpl stuDao = new StudentDaoImpl();
-			try {
-				boolean a = stuDao.find(number);				
-				boolean b = teaDao.find(teacher);
-				//判断学号和老师姓名存在
-				if(a&&b){
+			try {				
+				if(stuDao.find(number,teacher,course)){
 					//更新学生的信息
 					Student stu= new Student();
 					stu.setNumber(number);
@@ -62,26 +57,20 @@ public class DoGetStudent extends HttpServlet {
 					stu.setSchool(school);
 					if(stuDao.update(stu)){
 						try {
-							array.put("code", "success");
-							array.put("msg", "发送成功");
-							array.put("mail",mail);
-							array.put("pwd", pwd);					
-							System.out.println("发送成功！");
+							array.put("code", "success");									
+							System.out.println("--学生信息设置成功--");
 						} catch (Exception e) {
 							e.printStackTrace();
-							array.put("code", "succ");
-							array.put("msg", "发送失败");
-							System.out.println("发送失败！");
+							array.put("code", "false");
+							System.out.println("--学生信息设置失败--");
 						}						
 					}else{
 						array.put("code", "false");
-						array.put("msg", "插入异常");
 						System.out.println("插入异常！");
 						}
 					}else{
 						array.put("code", "succ");
-						array.put("msg", "失败");
-						System.out.println("发送失败！");	
+						System.out.println("--学生信息设置失败--");	
 					}
 			}catch (SQLException e1) {		
 					e1.printStackTrace();

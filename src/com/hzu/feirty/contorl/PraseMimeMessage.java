@@ -12,7 +12,7 @@ public class PraseMimeMessage{
 	private String saveAttachPath="";//附件下载后的存放目录
 	private StringBuffer bodytext= new StringBuffer();
 	//存放邮件内容的StringBuffer对象
-	private String dateformat="yyyy-MM-dd HH:mm:ss";//默认的日前显示格式
+	private String dateformat="yyyy-MM-dd HH:mm";//默认的日前显示格式
 
 
 /**

@@ -68,28 +68,30 @@ public class MailReceive {
              	}else{
              		number ="";
              	}
-             	String course = str.substring(str.indexOf("[") + 1, str.indexOf("]"));
-             	if(!number.equals("")&& new StudentDaoImpl().isExit(student.getTeacher(),number,course)){
-             	String sub = pmm.getSubject();
-             	String subject = sub.substring(sub.indexOf("]")+1);
-            	mail.setFrom(pmm.getFrom());
-            	System.out.println("发件人："+pmm.getFrom());
-            	mail.setSubject(subject);
-            	System.out.println("主题："+subject);
-            	mail.setCourse(course);
-            	pmm.getMailContent((Part)messages[i]);
-            	mail.setContent(pmm.getBodyText());
-            	System.out.println("正文："+pmm.getBodyText());
-            	mail.setAttachmentname(pmm.getFilename((Part)messages[i]));
-            	System.out.println("附件："+pmm.getFilename((Part)messages[i]));
-            	pmm.setDateFormat("yy.MM.dd-HH:mm");
-            	mail.setSentdata(pmm.getSentDate());
-            	System.out.println("发送时间："+pmm.getSentDate());
-                //PraseMimeMessage reciveMail = new PraseMimeMessage((MimeMessage) messages[i]);
-            	EmailDaoImpl eDaoImpl =new EmailDaoImpl();
-            	eDaoImpl.Insert(mail);
-                mailList.add(mail);// 添加到邮件列表中
-             	}
+             	if(!number.equals("")){
+             	 	String course = str.substring(str.indexOf("[") + 1, str.indexOf("]"));
+                 	if(new StudentDaoImpl().isExit(student.getTeacher(),number,course)){
+                 	String sub = pmm.getSubject();
+                 	String subject = sub.substring(sub.indexOf("]")+1);
+                	mail.setFrom(pmm.getFrom());
+                	System.out.println("发件人："+pmm.getFrom());
+                	mail.setSubject(subject);
+                	System.out.println("主题："+subject);
+                	mail.setCourse(course);
+                	pmm.getMailContent((Part)messages[i]);
+                	mail.setContent(pmm.getBodyText());
+                	System.out.println("正文："+pmm.getBodyText());
+                	mail.setAttachmentname(pmm.getFilename((Part)messages[i]));
+                	System.out.println("附件："+pmm.getFilename((Part)messages[i]));
+                	pmm.setDateFormat("yy.MM.dd-HH:mm");
+                	mail.setSentdata(pmm.getSentDate());
+                	System.out.println("发送时间："+pmm.getSentDate());
+                    //PraseMimeMessage reciveMail = new PraseMimeMessage((MimeMessage) messages[i]);
+                	EmailDaoImpl eDaoImpl =new EmailDaoImpl();
+                	eDaoImpl.Insert(mail);
+                    mailList.add(mail);// 添加到邮件列表中
+                 	}        
+             	}          
             }
             return mailList;
         }		
@@ -219,7 +221,6 @@ public class MailReceive {
 		StudentDaoImpl stuDao = new StudentDaoImpl();
 		Student student = new Student();
 		student = stuDao.Search(name);
-		String number="";
 		String mailname = new TeacherDaoImpl().find2(student.getTeacher()).getMail_name();
 		String pwd = new TeacherDaoImpl().find2(student.getTeacher()).getMail_pwd();
 		Store store =ConnUtil.login("pop.qq.com",mailname,pwd);
@@ -250,8 +251,8 @@ public class MailReceive {
 	            	pmm.setDateFormat("yy.MM.dd-HH:mm");
 	            	mail.setSentdata(pmm.getSentDate());
 	            	mail.setMessageID(pmm.getMessageId());
-	            	EmailDaoImpl eDaoImpl =new EmailDaoImpl();
-	            	eDaoImpl.Insert(mail);
+	            	//EmailDaoImpl eDaoImpl =new EmailDaoImpl();
+	            	//eDaoImpl.Insert(mail);
 	                mailList.add(mail);// 添加到邮件列表中
              	}
             }
@@ -263,7 +264,6 @@ public class MailReceive {
 		List<Email> mailList = new ArrayList<Email>();
 		TeacherDaoImpl tDao = new TeacherDaoImpl();
 		Teacher teacher = tDao.find2(name);
-		String number="";
 		String mail_name =teacher.getMail_name();
 		String mail_pwd = teacher.getMail_pwd();
 		Store store =ConnUtil.login("pop.qq.com",mail_name,mail_pwd);
@@ -279,8 +279,7 @@ public class MailReceive {
             Message[] messages = folder.getMessages();
              for (int i = 0; i < messages.length; i++) {
             	Email mail = new Email();
-             	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);
-             	//pmm.getSubject().contains("[作业]") ||pmm.getSubject().contains("[布置作业]"
+             	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);         
              	String str=pmm.getSubject();  
              	if(pmm.getSubject().contains("[课程:")){
              		String course = str.substring(str.indexOf(":") + 1, str.indexOf("]"));
@@ -295,7 +294,7 @@ public class MailReceive {
 	            	pmm.setDateFormat("yy.MM.dd-HH:mm");
 	            	mail.setSentdata(pmm.getSentDate());          
 	            	EmailDaoImpl eDaoImpl =new EmailDaoImpl();
-	            	eDaoImpl.Insert(mail);
+	            	//eDaoImpl.Insert(mail);
 	                mailList.add(mail);// 添加到邮件列表中
              	}
             }

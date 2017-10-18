@@ -26,11 +26,13 @@ import com.hzu.feirty.dao.CourseDaoImpl;
 import com.hzu.feirty.dao.StudentDaoImpl;
 import com.hzu.feirty.dao.TeacherDaoImpl;
 import com.hzu.feirty.dao.UserDaoImpl;
+import com.hzu.feirty.dao.WorkMadeDaoImpl;
 import com.hzu.feirty.entity.Construction;
 import com.hzu.feirty.entity.Course;
 import com.hzu.feirty.entity.Email;
 import com.hzu.feirty.entity.Student;
 import com.hzu.feirty.entity.Teacher;
+import com.hzu.feirty.entity.WorkMade;
 import com.hzu.feirty.utils.GetFileSize;
 import com.hzu.feirty.utils.ExportExcel;
 import net.sf.json.JSONArray;
@@ -56,37 +58,43 @@ public class DoGetMail extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		JSONObject array = new JSONObject();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String time = sdf.format(new Date());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		if(action.equals("send")){
+			String end_timeStr = request.getParameter("endtime");
 			String course = request.getParameter("course");
-			String subject = "[课程:"+course+"]"+request.getParameter("subject");
+			String subject1 =request.getParameter("subject");
+			String subject = "[课程:"+course+"]"+subject1;
 			String content = request.getParameter("content");	
 			try {
 				Teacher teacher =new TeacherDaoImpl().find2(user);
-				MailSenter mailsend =new MailSenter("smtp.qq.com",teacher.getMail_name(), teacher.getMail_pwd());
-				mailsend.send(teacher.getMail_name(),subject,content);				
+				MailSenter mailsend =new MailSenter("smtp.qq.com",teacher.getMail_name(), teacher.getMail_pwd());				
+				String starttimestr =sdf.format(new Date());
+				java.util.Date da2 = sdf.parse(starttimestr);
+				java.sql.Timestamp start_time = new java.sql.Timestamp(da2.getTime());
+				java.util.Date da1 = sdf.parse(end_timeStr);
+				java.sql.Timestamp end_time = new java.sql.Timestamp(da1.getTime());
+				WorkMade workmode = new WorkMade(subject1,content,course,start_time,end_time,user,course);
+				new WorkMadeDaoImpl().inSert(workmode);
+				mailsend.send(teacher.getMail_name(),subject,content);
 				array.put("code", "success");
-				array.put("msg", "发送成功");
+				array.put("msg", "--任务发布成功--");
 				array.put("data", "");
-				System.out.println("发送成功！");
+				System.out.println("--"+course+"任务发布成功--");
 			} catch (Exception e) {
 				e.printStackTrace();
 				array.put("code", "succ");
 				array.put("msg", "发布作业失败");
 				array.put("data", "");
-				System.out.println("发布作业失败！");
+				System.out.println("--"+course+"任务发布失败--");
 			}
 		} else if(action.equals("receivework")){
 			JSONArray arrays = new JSONArray();		
 			try {
 				String str =new UserDaoImpl().SearchType(user);				
-                //老师部分，作业邮件内容接收
+                //老师部分，任务内容接收
 				if(str.equals("teacher")){				
 					maillist = MailReceive.getAllReceiveWorkT(user);
 					CourseDaoImpl courseDaoImpl = new CourseDaoImpl();		
-					array.put("code", "success");		
-					array.put("msg", "11");	
 					for (int i = 0; i < maillist.size(); i++) {
 						JSONObject object = new JSONObject();
 						int stu_number= courseDaoImpl.findNumber(user,maillist.get(i).getCourse());
@@ -97,29 +105,33 @@ public class DoGetMail extends HttpServlet {
 						object.put("time", maillist.get(i).getSentdata());
 						arrays.add(object);
 					}
-					array.put("data", arrays.toString());	
+					array.put("data", arrays.toString());
+					array.put("code", "success");
 				}				
-                //学生部分：作业邮件内容接收
+                //学生部分：任务内容接收
 				else if(str.equals("student")){
 					maillist = MailReceive.getAllReceiveWorkS(user);
+					CourseDaoImpl courseDaoImpl = new CourseDaoImpl();
 					StudentDaoImpl stuDao = new StudentDaoImpl();
-					Student student = new Student();
-					student = stuDao.Search(user);
-					int stu_number = new CourseDaoImpl().findNumber(student.getTeacher(),"大学物理");
-					array.put("code", "success");
-					array.put("number", ""+stu_number);
-					array.put("msg", "11");	
+					Student student = stuDao.Search(user);			
 					for (int i = 0; i < maillist.size(); i++) {
-						JSONObject object = new JSONObject();
-						object.put("subject", maillist.get(i).getSubject());
-						object.put("content", maillist.get(i).getContent());
-						object.put("time", maillist.get(i).getSentdata());
-						arrays.add(object);
+						if(student.getCourse().equals(maillist.get(i).getCourse())){
+							JSONObject object = new JSONObject();
+							int stu_number= courseDaoImpl.findNumber(student.getTeacher(),maillist.get(i).getCourse());
+							object.put("course", maillist.get(i).getCourse());
+							object.put("subject", maillist.get(i).getSubject());
+							object.put("content", maillist.get(i).getContent());
+							object.put("stu_number",""+stu_number);
+							object.put("time", maillist.get(i).getSentdata());
+							arrays.add(object);							
+						}
+						
 					}
-					array.put("data", arrays.toString());										
+					array.put("data", arrays.toString());
+					array.put("code", "success");			
+					System.out.println("---学生身份:任务接收成功---");
 				}else{
-					array.put("code", "false");
-					array.put("msg", "11");						
+					array.put("code", "false");					
 				}		
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -132,12 +144,9 @@ public class DoGetMail extends HttpServlet {
 				if(str.equals("teacher")){
 					maillist = MailReceive.getAllMailByTeacher(user);
 					CourseDaoImpl courseDaoImpl = new CourseDaoImpl();
-					array.put("code", "success");
-					array.put("msg", "11");
 					int a=1;
 					for (int i = 0; i < maillist.size(); i++) {
 						JSONObject object = new JSONObject();
-						//if(){}
 						object.put("id", ""+a);
 						object.put("from", maillist.get(i).getFrom());
 						object.put("subject", maillist.get(i).getSubject());
@@ -150,7 +159,9 @@ public class DoGetMail extends HttpServlet {
 						arrays.add(object);
 						a++;
 					}
-					array.put("data", arrays.toString());	
+					array.put("data", arrays.toString());
+					array.put("code", "success");
+					System.out.println("---教师身份:作业接收成功---");
 				}				
                 //学生部分：作业邮件内容接收
 				else if(str.equals("student")){
@@ -158,21 +169,26 @@ public class DoGetMail extends HttpServlet {
 					StudentDaoImpl stuDao = new StudentDaoImpl();
 					Student student = new Student();
 					student = stuDao.Search(user);
-					int stu_number = new CourseDaoImpl().findNumber(student.getTeacher(),"大学物理");
-					array.put("code", "success");
-					array.put("number", ""+stu_number);
-					array.put("msg", "11");	
+					CourseDaoImpl courseDaoImpl = new CourseDaoImpl();		
+					int a=1;
 					for (int i = 0; i < maillist.size(); i++) {
-						JSONObject object = new JSONObject();
-						object.put("id", ""+i);
-						object.put("from", maillist.get(i).getFrom());
-						object.put("subject", maillist.get(i).getSubject());
-						object.put("content", maillist.get(i).getContent());
-						object.put("time", maillist.get(i).getSentdata());
-						object.put("attachment", maillist.get(i).getAttachmentname());
-						arrays.add(object);
+						if(student.getCourse().equals(maillist.get(i).getCourse())){
+							JSONObject object = new JSONObject();
+							object.put("id", ""+a);
+							object.put("from", maillist.get(i).getFrom());
+							object.put("subject", maillist.get(i).getSubject());
+							object.put("content", maillist.get(i).getContent());
+							object.put("time", maillist.get(i).getSentdata());
+							object.put("course", maillist.get(i).getCourse());
+							int stu_number= courseDaoImpl.findNumber(user,maillist.get(i).getCourse());
+							object.put("stu_number",""+stu_number);
+							object.put("attachment", maillist.get(i).getAttachmentname());
+							arrays.add(object);					
+						}						
 					}
-					array.put("data", arrays.toString());										
+					array.put("data", arrays.toString());
+					array.put("code", "success");		
+					System.out.println("---学生身份:作业接收成功---");							
 				}else{
 					array.put("code", "false");
 					array.put("msg", "11");						

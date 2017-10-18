@@ -2,6 +2,7 @@ package com.hzu.feirty.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -12,10 +13,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import com.hzu.feirty.contorl.MailReceive;
 import com.hzu.feirty.contorl.MailSenter;
+import com.hzu.feirty.dao.StudentDaoImpl;
 import com.hzu.feirty.dao.TeacherDaoImpl;
 import com.hzu.feirty.entity.Email;
 import com.hzu.feirty.entity.Teacher;
@@ -61,6 +64,27 @@ public class DoGetTeacher extends HttpServlet {
 				array.put("msg", "发送失败");
 				System.out.println("收集异常失败");
 			}	
+		}else if(action.equals("queryMyTeacher")){
+			JSONArray arrays = new JSONArray();	
+			String user = request.getParameter("user");
+			try {
+				List<String> tealist = new StudentDaoImpl().QueryTeacher(user);
+				if(!tealist.equals(null)){
+					for(int i=0;i<tealist.size();i++){
+						JSONObject object = new JSONObject();
+						object.put("teacher", tealist.get(i));
+						arrays.add(object);
+					}
+					array.put("teachers", arrays.toString());
+					array.put("code", "success");					
+				}else{
+					array.put("code", "queryMyTeacherNull");
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 		out.print(array);
 		out.flush();

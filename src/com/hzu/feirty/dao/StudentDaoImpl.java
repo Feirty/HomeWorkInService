@@ -86,9 +86,9 @@ public class StudentDaoImpl extends BaseDaoImpl {
 	 * 根据学号查找
 	 * 
 	 */
-	public boolean find(String number) throws SQLException{
+	public boolean find(String number,String teacher,String course) throws SQLException{
 		conn = this.getConnection();
-		pstmt = conn.prepareStatement("select * from student where number='" + number + "'");
+		pstmt = conn.prepareStatement("select * from student where number='" + number + "' and teacher='"+teacher+"' and course='"+course+"'");
 		rs = pstmt.executeQuery();
 		if (rs.next()) {
 			return true;
@@ -114,6 +114,7 @@ public class StudentDaoImpl extends BaseDaoImpl {
 				content.setId(rs.getInt("id"));
 				content.setName(rs.getString("name"));
 				content.setTeacher(rs.getString("teacher"));
+				content.setCourse(rs.getString("course"));
 				return content;
 			}
 		} catch (SQLException e) {
@@ -186,6 +187,8 @@ public class StudentDaoImpl extends BaseDaoImpl {
 		}
 		return false;
 	}
+	
+	
 	public boolean delete(String teacher,String course) throws Exception{
 		 conn = this.getConnection();
 		 int i =0;
@@ -200,6 +203,17 @@ public class StudentDaoImpl extends BaseDaoImpl {
 			this.closeAll(rs, pstmt, conn);
 		}
 	}
+	
+	public List<String> QueryTeacher(String name) throws SQLException{
+		conn = this.getConnection();
+		pstmt = conn.prepareStatement("select teacher from student where name='"+name+"'");
+		rs = pstmt.executeQuery();
+		List<String> list = new ArrayList<String>();
+		while(rs.next()){			 
+			   list.add(rs.getString("teacher"));
+		}
+		return list;
+	}	
 	
 	/**
 	 * 查询某用户是否存在，根据teacher

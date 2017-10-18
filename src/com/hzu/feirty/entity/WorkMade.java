@@ -1,10 +1,13 @@
 package com.hzu.feirty.entity;
 
+import java.sql.Timestamp;
+
 public class WorkMade {
 	private int id;
 	private String work_name;
 	private String work_content;
-	private String arrange_time;
+	private Timestamp start_time;
+	private Timestamp end_time;
 	private String teacher_name;
 	private String course_name;
 	private String work_number;
@@ -12,11 +15,20 @@ public class WorkMade {
 	public WorkMade(){
 		super();
 	}
-	public WorkMade(String workname,String content,String time,String teaname){
+	public WorkMade(String workname,String content,String course_name,Timestamp start_time,Timestamp end_time,String teaname,String course){
 		this.work_name = workname;
 		this.work_content = content;
-		this.arrange_time = time;
-		this.teacher_name = teaname;		
+		this.end_time = end_time;
+		this.teacher_name = teaname;
+		this.start_time = start_time;
+		this.course_name = course;
+	}
+	
+	public Timestamp getStart_time() {
+		return start_time;
+	}
+	public void setStart_time(Timestamp start_time) {
+		this.start_time = start_time;
 	}
 	public String getWork_number() {
 		return work_number;
@@ -43,11 +55,11 @@ public class WorkMade {
 	public void setWork_content(String work_content) {
 		this.work_content = work_content;
 	}
-	public String getArrange_time() {
-		return arrange_time;
+	public Timestamp getEnd_time() {
+		return end_time;
 	}
-	public void setArrange_time(String arrange_time) {
-		this.arrange_time = arrange_time;
+	public void setEnd_time(Timestamp end_time) {
+		this.end_time = end_time;
 	}
 	public String getTeacher_name() {
 		return teacher_name;

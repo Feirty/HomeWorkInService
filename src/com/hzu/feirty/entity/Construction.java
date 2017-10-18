@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 
 public class Construction {
 	private String teacher_name;
+	private String course_name;
 	private long number;
 	private String zipname;
 	private String zipsize;
@@ -17,6 +18,15 @@ public class Construction {
 		this.zipsize = zipsize;
 		this.time = time;
 		
+	}
+	public String getCourse_name() {
+		return course_name;
+	}
+	public void setCourse_name(String course_name) {
+		this.course_name = course_name;
+	}
+	public void setNumber(long number) {
+		this.number = number;
 	}
 	public String getTeacher_name() {
 		return teacher_name;

@@ -247,7 +247,7 @@ public class ExportExcel<T> {
 		String[] headers = {"编号","学号", "作业名称", "作业大小","作业发送时间"};
 		List<HomeWork> dataset = new HomeWorkDaoImpl().QueryAll();
 		OutputStream out = new FileOutputStream(docsPath + FILE_SEPARATOR
-				+ "作业统计信息001.xls");
+				+ "作业统计信息.xls");
 		ex.exportExcel(headers, dataset, out);
 		out.close();
 	}
