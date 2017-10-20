@@ -42,14 +42,25 @@ public class HomeWorkDaoImpl extends BaseDaoImpl{
 		}
 		return false;
 	}
-	
 	/*
-	 * 查询学生数据是否存在
+	 * 清除已有学生数据
+	 */
+	public void deleteDate(String stu_id,String course) throws SQLException{
+		conn = this.getConnection();
+		if(isExist(stu_id, course)){
+			pstmt = conn.prepareStatement("delete  from homework where stu_id = '"+stu_id+"' and" +
+					" course_name='"+course+"'");
+			pstmt.executeUpdate();
+		}
+	}
+	/*
+	 * 查询学生数据是否存在by 学生id，课程
 	 * 
 	 */
-	public boolean isExist(String stu_id) throws SQLException{
+	public boolean isExist(String stu_id,String course) throws SQLException{
 		conn = this.getConnection();
-		pstmt = conn.prepareStatement("select * from homework where stu_id='" + stu_id + "'");
+		pstmt = conn.prepareStatement("select * from homework where stu_id='" + stu_id + "' and" +
+				" course_name='"+course+"'");
 		rs = pstmt.executeQuery();
 		if (rs.next()) {
 			return true;
@@ -58,6 +69,21 @@ public class HomeWorkDaoImpl extends BaseDaoImpl{
 		}
 	}
 	
+	/*
+	 * 查询学生数据是否存在bymail_id
+	 * 
+	 */
+	public boolean isExistMailid(String id,String stu_number,String course) throws SQLException{
+		conn = this.getConnection();
+		pstmt = conn.prepareStatement("select * from homework where id='" + id +"'" +
+				"and stu_id = '"+stu_number+"' and course_name = '"+course+"'");
+		rs = pstmt.executeQuery();
+		if (rs.next()) {
+			return true;
+		}else {
+			return false;
+		}
+	}
 	/*
 	 * 查询所有的作业数据
 	 * @return list<HomeWork>
@@ -72,7 +98,7 @@ public class HomeWorkDaoImpl extends BaseDaoImpl{
 			rs = pstmt.executeQuery();
 			while(rs.next()){				
 				HomeWork homework=new HomeWork();
-				homework.setId(rs.getInt(1));
+				homework.setId(rs.getString(1));
 				homework.setStu_id(rs.getString(2));
 				homework.setFile_name(rs.getString(3));
 				homework.setFile_size(rs.getString(4));

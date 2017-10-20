@@ -3,6 +3,7 @@ package com.hzu.feirty.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.mail.Store;
@@ -15,14 +16,17 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import com.hzu.feirty.contorl.MailReceive;
+import com.hzu.feirty.dao.CourseDaoImpl;
 import com.hzu.feirty.dao.SchoolDaoImpl;
 import com.hzu.feirty.dao.StudentDaoImpl;
 import com.hzu.feirty.dao.TeacherDaoImpl;
 import com.hzu.feirty.dao.UserDaoImpl;
+import com.hzu.feirty.entity.Course;
 import com.hzu.feirty.entity.Student;
 import com.hzu.feirty.entity.Teacher;
 import com.hzu.feirty.entity.User;
 import com.hzu.feirty.utils.ConnUtil;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 public class DoGetStudent extends HttpServlet {
 	public DoGetStudent() {
@@ -91,6 +95,37 @@ public class DoGetStudent extends HttpServlet {
 			}else{
 				array.put("code", "queryStudentNull");
 			}			 						
+		}else if(action.equals("checkhomework")){
+			String course = request.getParameter("course");
+			try {
+				if(new MailReceive().queryWorked(username, course)){
+					array.put("code", "success");
+					System.out.println("作业已收取");					
+				}else{
+					array.put("code", "false");
+					System.out.println("作业未收取");
+				}
+			} catch (Exception e) {				
+				e.printStackTrace();
+			}
+		}else if(action.equals("findcourse")){
+			JSONArray arrays = new JSONArray();	
+			List<String> list = new ArrayList<String>();
+			try {
+				list = new StudentDaoImpl().QueryCourse(username);
+				for(int i=0;i<list.size();i++){
+					JSONObject object = new JSONObject();
+					object.put("course", list.get(i));
+					arrays.add(object);
+				}
+				array.put("course", arrays.toString());
+				array.put("code", "success");
+				array.put("msg", "11");
+				System.out.println("课程发送成功");
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
 		}
 		out.print(array);
 		out.flush();

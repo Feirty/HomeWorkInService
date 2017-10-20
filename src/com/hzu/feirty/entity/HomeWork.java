@@ -3,7 +3,7 @@ package com.hzu.feirty.entity;
 import java.sql.Timestamp;
 
 public class HomeWork {
-	private int id;
+	private String id;
 	private String stu_id;
 	private String file_name;
 	private String file_size;
@@ -13,7 +13,7 @@ public class HomeWork {
 	public HomeWork(){
 		super();
 	}
-	public HomeWork(String stu_id,String file_name,String file_size,Timestamp file_time,String course_name,int file_number){
+	public HomeWork(String id,String stu_id,String file_name,String file_size,Timestamp file_time,String course_name,int file_number){
 		this.stu_id =stu_id;
 		this.file_name =file_name;
 		this.file_size =file_size;
@@ -35,10 +35,10 @@ public class HomeWork {
 	public void setFile_time(Timestamp file_time) {
 		this.file_time = file_time;
 	}
-	public int getId() {
+	public String  getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public String getStu_id() {

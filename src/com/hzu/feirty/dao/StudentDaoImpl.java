@@ -213,7 +213,18 @@ public class StudentDaoImpl extends BaseDaoImpl {
 			   list.add(rs.getString("teacher"));
 		}
 		return list;
-	}	
+	}
+	
+	public List<String> QueryCourse(String name) throws SQLException{
+		conn = this.getConnection();
+		pstmt = conn.prepareStatement("select course from student where name='"+name+"'");
+		rs = pstmt.executeQuery();
+		List<String> list = new ArrayList<String>();
+		while(rs.next()){			 
+			   list.add(rs.getString("course"));
+		}
+		return list;
+	}
 	
 	/**
 	 * 查询某用户是否存在，根据teacher

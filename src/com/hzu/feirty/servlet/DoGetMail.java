@@ -126,8 +126,7 @@ public class DoGetMail extends HttpServlet {
 							object.put("stu_number",""+stu_number);
 							object.put("time", maillist.get(i).getSentdata());
 							arrays.add(object);							
-						}
-						
+						}					
 					}
 					array.put("data", arrays.toString());
 					array.put("code", "success");			
@@ -268,7 +267,7 @@ public class DoGetMail extends HttpServlet {
 					Teacher teacher = new TeacherDaoImpl().find2(user);
 					if(!teacher.getPeasonmail().equals("")){
 						DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
-						String date =dateFormat.format(new Date());	
+						String date =dateFormat.format(new Date());						
 						//作业匹配下载				
 						String docsPath = request.getSession().getServletContext().getRealPath("docs"+date);
 						//  i为作业的数量

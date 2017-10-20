@@ -29,72 +29,75 @@ import com.hzu.feirty.utils.ConnUtil;
 import com.hzu.feirty.utils.GetFileSize;
 import com.hzu.feirty.utils.IOUtil;
 import com.sun.corba.se.impl.javax.rmi.CORBA.StubDelegateImpl;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import javax.mail.internet.MimeMessage;
 
 
 public class MailReceive {
 	private String dateformat="yy-MM-dd HH:mm";//默认的日前显示格式
-		
 	public static List<Email>  getAllMail(String name) throws Exception{
+		List<String> tealist = new ArrayList<String>();
 		List<Email> mailList = new ArrayList<Email>();
 		StudentDaoImpl stuDao = new StudentDaoImpl();
 		Student student = new Student();
 		student = stuDao.Search(name);
-		String number="";
-		String mailname = new TeacherDaoImpl().find2(student.getTeacher()).getMail_name();
-		String pwd = new TeacherDaoImpl().find2(student.getTeacher()).getMail_pwd();
-		Store store =ConnUtil.login("pop.qq.com",mailname,pwd);
-		Folder folder = store.getFolder("INBOX");
-		folder.open(Folder.READ_ONLY);
-	    int mailCount = folder.getMessageCount();
-        if (mailCount == 0) {
-            folder.close(true);
-            store.close();
-            return null;
-        } else {
-            // 取得所有的邮件
-            Message[] messages = folder.getMessages();
-             for (int i = 0; i < messages.length; i++) {
-            	 Email mail = new Email();
-             	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);
-             	//pmm.getSubject().contains("[作业]") ||pmm.getSubject().contains("[布置作业]"
-             	String str=pmm.getSubject();  
-             	String regex = "[0-9]{13}"; //正则表达式  
-             	Pattern pattern = Pattern.compile(regex);   
-             	Matcher m = pattern.matcher(str);
-             	if(m.find()){ 
-             	    number =m.group();
-             	}else{
-             		number ="";
-             	}
-             	if(!number.equals("")){
-             	 	String course = str.substring(str.indexOf("[") + 1, str.indexOf("]"));
-                 	if(new StudentDaoImpl().isExit(student.getTeacher(),number,course)){
-                 	String sub = pmm.getSubject();
-                 	String subject = sub.substring(sub.indexOf("]")+1);
-                	mail.setFrom(pmm.getFrom());
-                	System.out.println("发件人："+pmm.getFrom());
-                	mail.setSubject(subject);
-                	System.out.println("主题："+subject);
-                	mail.setCourse(course);
-                	pmm.getMailContent((Part)messages[i]);
-                	mail.setContent(pmm.getBodyText());
-                	System.out.println("正文："+pmm.getBodyText());
-                	mail.setAttachmentname(pmm.getFilename((Part)messages[i]));
-                	System.out.println("附件："+pmm.getFilename((Part)messages[i]));
-                	pmm.setDateFormat("yy.MM.dd-HH:mm");
-                	mail.setSentdata(pmm.getSentDate());
-                	System.out.println("发送时间："+pmm.getSentDate());
-                    //PraseMimeMessage reciveMail = new PraseMimeMessage((MimeMessage) messages[i]);
-                	EmailDaoImpl eDaoImpl =new EmailDaoImpl();
-                	eDaoImpl.Insert(mail);
-                    mailList.add(mail);// 添加到邮件列表中
-                 	}        
-             	}          
-            }
-            return mailList;
-        }		
+		tealist = stuDao.QueryTeacher(name);
+		for(int b=0;b<tealist.size();b++){
+			String number="";
+			String mailname = new TeacherDaoImpl().find2(tealist.get(b)).getMail_name();
+			String pwd = new TeacherDaoImpl().find2(tealist.get(b)).getMail_pwd();
+			Store store =ConnUtil.login("pop.qq.com",mailname,pwd);
+			Folder folder = store.getFolder("INBOX");
+			folder.open(Folder.READ_ONLY);
+		    int mailCount = folder.getMessageCount();
+	        if (mailCount == 0) {
+	            folder.close(true);
+	            store.close();
+	            continue;
+	        } else {
+	            // 取得所有的邮件
+	            Message[] messages = folder.getMessages();
+	             for (int i = 0; i < messages.length; i++) {
+	            	 Email mail = new Email();
+	             	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);	        
+	             	String str=pmm.getSubject();  
+	             	String regex = "[0-9]{13}"; //正则表达式  
+	             	Pattern pattern = Pattern.compile(regex);   
+	             	Matcher m = pattern.matcher(str);
+	             	if(m.find()){ 
+	             	    number =m.group();
+	             	}else{
+	             		number ="";
+	             	}
+	             	if(!number.equals("")){
+	             	 	String course = str.substring(str.indexOf("[") + 1, str.indexOf("]"));
+	                 	if(new StudentDaoImpl().isExit(student.getTeacher(),number,course)){
+	                 	String sub = pmm.getSubject();
+	                 	String subject = sub.substring(sub.indexOf("]")+1);
+	                	mail.setFrom(pmm.getFrom());
+	                	System.out.println("发件人："+pmm.getFrom());
+	                	mail.setSubject(subject);
+	                	System.out.println("主题："+subject);
+	                	mail.setCourse(course);
+	                	pmm.getMailContent((Part)messages[i]);
+	                	mail.setContent(pmm.getBodyText());
+	                	System.out.println("正文："+pmm.getBodyText());
+	                	mail.setAttachmentname(pmm.getFilename((Part)messages[i]));
+	                	System.out.println("附件："+pmm.getFilename((Part)messages[i]));
+	                	pmm.setDateFormat("yy.MM.dd-HH:mm");
+	                	mail.setSentdata(pmm.getSentDate());
+	                	System.out.println("发送时间："+pmm.getSentDate());
+	                    //PraseMimeMessage reciveMail = new PraseMimeMessage((MimeMessage) messages[i]);
+	                	EmailDaoImpl eDaoImpl =new EmailDaoImpl();
+	                	eDaoImpl.Insert(mail);
+	                    mailList.add(mail);// 添加到邮件列表中
+	                 	}        
+	             	}          
+	            }	           
+	        }			
+		}
+		return mailList;
 	}
 	public static List<Email>  getAllMailByTeacher(String name) throws Exception{
 		List<Email> mailList = new ArrayList<Email>();
@@ -218,46 +221,50 @@ public class MailReceive {
 	
 	public static List<Email>  getAllReceiveWorkS(String name) throws Exception{
 		List<Email> mailList = new ArrayList<Email>();
+		List<String> tealist = new ArrayList<String>();
 		StudentDaoImpl stuDao = new StudentDaoImpl();
 		Student student = new Student();
 		student = stuDao.Search(name);
-		String mailname = new TeacherDaoImpl().find2(student.getTeacher()).getMail_name();
-		String pwd = new TeacherDaoImpl().find2(student.getTeacher()).getMail_pwd();
-		Store store =ConnUtil.login("pop.qq.com",mailname,pwd);
-		Folder folder = store.getFolder("INBOX");
-		folder.open(Folder.READ_ONLY);
-	    int mailCount = folder.getMessageCount();
-        if (mailCount == 0) {
-            folder.close(true);
-            store.close();
-            return null;
-        } else {
-            // 取得所有的邮件
-            Message[] messages = folder.getMessages();
-             for (int i = 0; i < messages.length; i++) {
-            	Email mail = new Email();
-             	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);
-             	String str=pmm.getSubject();  
-             	if(pmm.getSubject().contains("[课程:")){
-             		String course = str.substring(str.indexOf(":") + 1, str.indexOf("]"));
-             		String sub = pmm.getSubject();
-             		String subject = sub.substring(sub.indexOf("]")+1);
-	            	mail.setSubject(subject);
-	            	System.out.println(pmm.getSubject());
-	            	pmm.getMailContent((Part)messages[i]);
-	            	mail.setContent(pmm.getBodyText());
-	            	System.out.println(pmm.getBodyText());
-	            	mail.setCourse(course);
-	            	pmm.setDateFormat("yy.MM.dd-HH:mm");
-	            	mail.setSentdata(pmm.getSentDate());
-	            	mail.setMessageID(pmm.getMessageId());
-	            	//EmailDaoImpl eDaoImpl =new EmailDaoImpl();
-	            	//eDaoImpl.Insert(mail);
-	                mailList.add(mail);// 添加到邮件列表中
-             	}
-            }
-            return mailList;
-        }		
+		tealist = stuDao.QueryTeacher(name);
+		for(int b=0;b<tealist.size();b++){
+			String mailname = new TeacherDaoImpl().find2(tealist.get(b)).getMail_name();
+			String pwd = new TeacherDaoImpl().find2(tealist.get(b)).getMail_pwd();
+			Store store =ConnUtil.login("pop.qq.com",mailname,pwd);
+			Folder folder = store.getFolder("INBOX");
+			folder.open(Folder.READ_ONLY);
+		    int mailCount = folder.getMessageCount();
+	        if (mailCount == 0) {
+	            folder.close(true);
+	            store.close();
+	            continue;
+	        } else {
+	            // 取得所有的邮件
+	            Message[] messages = folder.getMessages();
+	             for (int i = 0; i < messages.length; i++) {
+	            	Email mail = new Email();
+	             	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);
+	             	String str=pmm.getSubject();  
+	             	if(pmm.getSubject().contains("[课程:")){
+	             		String course = str.substring(str.indexOf(":") + 1, str.indexOf("]"));
+	             		String sub = pmm.getSubject();
+	             		String subject = sub.substring(sub.indexOf("]")+1);
+		            	mail.setSubject(subject);
+		            	System.out.println(pmm.getSubject());
+		            	pmm.getMailContent((Part)messages[i]);
+		            	mail.setContent(pmm.getBodyText());
+		            	System.out.println(pmm.getBodyText());
+		            	mail.setCourse(course);
+		            	pmm.setDateFormat("yy.MM.dd-HH:mm");
+		            	mail.setSentdata(pmm.getSentDate());
+		            	mail.setMessageID(pmm.getMessageId());
+		            	//EmailDaoImpl eDaoImpl =new EmailDaoImpl();
+		            	//eDaoImpl.Insert(mail);
+		                mailList.add(mail);// 添加到邮件列表中
+	             	}
+	            }	         
+	        }		
+		}
+		return mailList;
 	}
 	
 	public static List<Email>  getAllReceiveWorkT(String name) throws Exception{
@@ -344,8 +351,11 @@ public class MailReceive {
 	                			if(!file.exists()){
 	                				file.mkdirs();
 	                			}
+	                			//清除上次作业的记录
+	                			new HomeWorkDaoImpl().deleteDate(number, course1);
 	                			//得到发送时间
 	                			Date sd =pmm.getSentDate2();
+	                			String mail_id = pmm.getMessageId();
 	                			java.sql.Timestamp sendtime = new java.sql.Timestamp(sd.getTime());
 	                			pmm.setAttachPath(file.toString());
 	                			pmm.saveAttachMent((Part)messages[i]);
@@ -357,7 +367,7 @@ public class MailReceive {
 	                			String filesize =getFileSize.FormetFileSize(getFileSize.getFileSizes(path));         			           		
 	                			//将作业得学号、文件名、文件大小、发送时间存入homework表中
 	                			HomeWorkDaoImpl HomeWorkDaoImpl = new HomeWorkDaoImpl();
-	                			HomeWork homework =new HomeWork(number,filename,filesize,sendtime,course,1);
+	                			HomeWork homework =new HomeWork(mail_id,number,filename,filesize,sendtime,course,1);
 	                			HomeWorkDaoImpl.inSert(homework);
 	                			shu++;
 	                		}
@@ -456,5 +466,51 @@ public class MailReceive {
             }          
         }
 		return false;			
+	}
+	
+	/*
+	 * 学生查询作业是否已经收取
+	 */
+	public boolean queryWorked(String name,String course1) throws Exception{
+		StudentDaoImpl stuDao = new StudentDaoImpl();
+		Student student = new Student();
+		student = stuDao.Search(name);
+		boolean ty = false;
+		String number="";
+		String mailname = new TeacherDaoImpl().find2(student.getTeacher()).getMail_name();
+		String pwd = new TeacherDaoImpl().find2(student.getTeacher()).getMail_pwd();
+		Store store =ConnUtil.login("pop.qq.com",mailname,pwd);
+		Folder folder = store.getFolder("INBOX");
+		folder.open(Folder.READ_ONLY);
+	    int mailCount = folder.getMessageCount();
+        if (mailCount == 0) {
+            folder.close(true);
+            store.close();
+            return false;
+        } else {
+            Message[] messages = folder.getMessages();
+             for (int i = 0; i < messages.length; i++) {           
+             	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);          
+             	String str=pmm.getSubject();  
+             	String regex = "[0-9]{13}"; //正则表达式  
+             	Pattern pattern = Pattern.compile(regex);   
+             	Matcher m = pattern.matcher(str);
+             	if(m.find()){ 
+             	    number =m.group();
+             	}else{
+             		number ="";
+             	}
+             	if(!number.equals("")){
+             	 	String course = str.substring(str.indexOf("[") + 1, str.indexOf("]"));
+                 	if(new StudentDaoImpl().isExit(student.getTeacher(),number,course)&& course.equals(course1)){
+                 		String id = pmm.getMessageId();
+                 		if(new HomeWorkDaoImpl().isExistMailid(id,student.getNumber(),course)){
+                 			ty=true;               		
+                 		}         
+                 	}        
+             	}          
+            }
+            return ty;
+        }		
 	}
 }
