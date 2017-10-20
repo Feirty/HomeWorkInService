@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import com.hzu.feirty.entity.Course;
+import com.sun.org.apache.regexp.internal.recompile;
 
 public class CourseDaoImpl extends BaseDaoImpl{
 	PreparedStatement pstmt = null;
@@ -19,10 +20,11 @@ public class CourseDaoImpl extends BaseDaoImpl{
 		conn = this.getConnection();
 		if(!find(course.getName(),course.getTea_name())){
 			try {
-				pstmt = conn.prepareStatement("insert into course(name,stu_number,tea_name)values(?,?,?)");
+				pstmt = conn.prepareStatement("insert into course(name,stu_number,tea_name,works_number)values(?,?,?,?)");
 				pstmt.setString(1, course.getName());
 				pstmt.setInt(2,course.getStu_number());
 				pstmt.setString(3,course.getTea_name());
+				pstmt.setInt(4, 0);
 				pstmt.executeUpdate();
 				return true;
 			} catch (SQLException e) {
@@ -66,16 +68,33 @@ public class CourseDaoImpl extends BaseDaoImpl{
 	}
 	
 	//查找
-		public boolean find2(String name,String tea_name) throws SQLException{
-			conn = this.getConnection();
-			pstmt = conn.prepareStatement("select * from course where name='" + name + "'and tea_name='"+tea_name+"'");
-			rs = pstmt.executeQuery();
-			if (rs.next()) {
-				return true;
-			}else {
-				return false;
-			}
+	public boolean find2(String name,String tea_name) throws SQLException{
+		conn = this.getConnection();
+		pstmt = conn.prepareStatement("select * from course where name='" + name + "'and tea_name='"+tea_name+"'");
+		rs = pstmt.executeQuery();
+		if (rs.next()) {
+			return true;
+		}else {
+			return false;
 		}
+	}
+	
+	//查询课程发布作业的次数
+	public boolean queryWorks_number(String teacher_name,String course_name) throws SQLException{
+		conn = this.getConnection();
+		pstmt = conn.prepareStatement("select works_number from course where tea_name = " +
+				"'"+teacher_name+"' and name = '"+course_name+"'");
+		rs = pstmt.executeQuery();
+		if(rs.next()){
+			int old_number = rs.getInt("works_number");
+			old_number++;
+			conn.prepareStatement("update course set works_number = '"+old_number+"' where tea_name = " +
+					"'"+teacher_name+"' and name = '"+course_name+"'");
+			return true;
+		}
+		return false;
+	}
+				
 	/*
 	 * 查找学生的总人数
 	 * 

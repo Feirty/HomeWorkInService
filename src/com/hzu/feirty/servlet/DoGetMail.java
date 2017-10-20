@@ -76,10 +76,12 @@ public class DoGetMail extends HttpServlet {
 				WorkMade workmode = new WorkMade(subject1,content,course,start_time,end_time,user,course);
 				new WorkMadeDaoImpl().inSert(workmode);
 				mailsend.send(teacher.getMail_name(),subject,content);
-				array.put("code", "success");
-				array.put("msg", "--任务发布成功--");
-				array.put("data", "");
-				System.out.println("--"+course+"任务发布成功--");
+				if(new CourseDaoImpl().queryWorks_number(user, course)){
+					array.put("code", "success");
+					array.put("msg", "--任务发布成功--");
+					array.put("data", "");
+					System.out.println("--"+course+"任务发布成功--");		
+				}				
 			} catch (Exception e) {
 				e.printStackTrace();
 				array.put("code", "succ");

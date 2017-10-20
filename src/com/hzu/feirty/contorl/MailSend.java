@@ -1,6 +1,5 @@
 package com.hzu.feirty.contorl;
 /** 
- * CrazyItTest 
  * 使用JavaMail发送带附件的电子邮件示例 
  */  
 import java.io.FileNotFoundException;
@@ -20,11 +19,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;  
 import javax.mail.internet.MimeMultipart;  
 import javax.mail.internet.MimeUtility;  
-/** 
- * @author Bill Tu 
- * @since May 26, 2011(21:03:36 PM) 
- * 
- */  
+
 public class MailSend {  
      private static Session getSession(String protocol){  
          Properties mailProps=new Properties();  
