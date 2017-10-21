@@ -49,7 +49,7 @@ public class DoGetUser extends HttpServlet {
 				array.put("data", list.get(0));
 			}
 		} else if (action.equals("save")) {
-
+			String code=request.getParameter("identify_code");
 			String username = request.getParameter("user");
 			String password = request.getParameter("password");
 			User users = new User(username, password);

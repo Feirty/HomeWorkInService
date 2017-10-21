@@ -39,7 +39,6 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 public class DoGetMail extends HttpServlet {
-	private ArrayList<ArrayList<InputStream>> attachmentsInputStreamsList = new ArrayList<ArrayList<InputStream>>();
 	ArrayList<String> attachments= new ArrayList<String>();
 	private List<Email> maillist;
 	//ArrayList<String> attachments;
@@ -57,7 +56,7 @@ public class DoGetMail extends HttpServlet {
 		String user = request.getParameter("user");
 		PrintWriter out = response.getWriter();
 		JSONObject array = new JSONObject();
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		//SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		if(action.equals("send")){
 			String end_timeStr = request.getParameter("endtime");
@@ -75,7 +74,7 @@ public class DoGetMail extends HttpServlet {
 				java.sql.Timestamp end_time = new java.sql.Timestamp(da1.getTime());
 				WorkMade workmode = new WorkMade(subject1,content,course,start_time,end_time,user,course);
 				new WorkMadeDaoImpl().inSert(workmode);
-				mailsend.send(teacher.getMail_name(),subject,content);
+				mailsend.send("smtp.qq.com",teacher.getPeasonmail(),subject,content);
 				if(new CourseDaoImpl().queryWorks_number(user, course)){
 					array.put("code", "success");
 					array.put("msg", "--任务发布成功--");

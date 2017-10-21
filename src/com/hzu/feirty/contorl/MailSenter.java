@@ -63,14 +63,13 @@ public class MailSenter {
 
     /**
      * 发送邮件
-     *
+     * @param hostname 
      * @param mailTo 收件人email地址
      * @param mailSubject 邮件标题
      * @param mailBody 邮件正文
      * @throws Exception
      */
-    public void send(String mailTo, String mailSubject, String mailBody) throws Exception {
-    	// TODO Auto-generated method stub
+    public void send(String hostname,String mailTo, String mailSubject, String mailBody) throws Exception {
     	// Create the attachment
     	EmailAttachment attachment = new EmailAttachment();
     	//附件地址
@@ -86,7 +85,7 @@ public class MailSenter {
     	// Create the email message
     	MultiPartEmail email = new MultiPartEmail();
     	//邮件服务器
-    	email.setHostName("smtp.qq.com");
+    	email.setHostName(hostname);
     	//端口号
     	email.setSmtpPort(25);
     	//用户名、密码
