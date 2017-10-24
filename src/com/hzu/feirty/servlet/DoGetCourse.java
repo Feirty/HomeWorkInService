@@ -66,7 +66,6 @@ public class DoGetCourse extends HttpServlet {
 				int stu_number= courseDaoImpl.findNumber(user,course);
 				array.put("code", "success");
 				array.put("number", ""+stu_number);
-				array.put("msg", "11");
 				int a=1;
 				for (int i = 0; i < maillist.size(); i++) {
 					JSONObject object = new JSONObject();

@@ -16,12 +16,15 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import com.hzu.feirty.contorl.MailReceive;
+import com.hzu.feirty.dao.ConstructionDaoImpl;
 import com.hzu.feirty.dao.CourseDaoImpl;
+import com.hzu.feirty.dao.HomeWorkDaoImpl;
 import com.hzu.feirty.dao.SchoolDaoImpl;
 import com.hzu.feirty.dao.StudentDaoImpl;
 import com.hzu.feirty.dao.TeacherDaoImpl;
 import com.hzu.feirty.dao.UserDaoImpl;
 import com.hzu.feirty.entity.Course;
+import com.hzu.feirty.entity.HomeWork;
 import com.hzu.feirty.entity.Student;
 import com.hzu.feirty.entity.Teacher;
 import com.hzu.feirty.entity.User;
@@ -40,10 +43,10 @@ public class DoGetStudent extends HttpServlet {
 		response.setCharacterEncoding("utf-8");
 		request.setCharacterEncoding("utf-8");
 		String action = request.getParameter("action");
-		String username = request.getParameter("user");
 		PrintWriter out = response.getWriter();
 		JSONObject array = new JSONObject();
 		if(action.equals("SAVESET")){
+			String username = request.getParameter("user");
 			String teacher = request.getParameter("teacher");
 			String school = request.getParameter("school");
 			String number = request.getParameter("number");
@@ -81,6 +84,7 @@ public class DoGetStudent extends HttpServlet {
 				}		
 		} else if(action.equals("findstudent")){
 			JSONArray arrays = new JSONArray();	
+			String username = request.getParameter("user");
 			String course = request.getParameter("course");		
 			List<Student> list = new StudentDaoImpl().QueryStudent(username,course);
 			if(!list.equals(null)){
@@ -96,6 +100,7 @@ public class DoGetStudent extends HttpServlet {
 				array.put("code", "queryStudentNull");
 			}			 						
 		}else if(action.equals("checkhomework")){
+			String username = request.getParameter("user");
 			String course = request.getParameter("course");
 			try {
 				if(new MailReceive().queryWorked(username, course)){
@@ -109,6 +114,7 @@ public class DoGetStudent extends HttpServlet {
 				e.printStackTrace();
 			}
 		}else if(action.equals("findcourse")){
+			String username = request.getParameter("user");
 			JSONArray arrays = new JSONArray();	
 			List<String> list = new ArrayList<String>();
 			try {
@@ -126,6 +132,28 @@ public class DoGetStudent extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}	
+		}else if(action.equals("findhomework")){
+			String teachername = request.getParameter("user");
+			String course = request.getParameter("course");
+			JSONArray arrays = new JSONArray();
+			List<HomeWork> list = new ArrayList<HomeWork>();
+			try {
+				list = new HomeWorkDaoImpl().QueryAll2(teachername,course);
+				for(int i=0;i<list.size();i++){
+					JSONObject object = new JSONObject();
+					object.put("stu_id", list.get(i).getStu_id());
+					object.put("file_name", list.get(i).getFile_name());
+					object.put("file_size", list.get(i).getFile_size());
+					arrays.add(object);				
+				}
+				array.put("homework", arrays.toString());
+				array.put("code", "success");
+				System.out.println("统计信息发送成功");
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 		out.print(array);
 		out.flush();

@@ -59,20 +59,22 @@ public class DoGetMail extends HttpServlet {
 		//SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		if(action.equals("send")){
-			String end_timeStr = request.getParameter("endtime");
+			//String end_timeStr = request.getParameter("endtime");
 			String course = request.getParameter("course");
 			String subject1 =request.getParameter("subject");
 			String subject = "[课程:"+course+"]"+subject1;
-			String content = request.getParameter("content");	
+			String content = request.getParameter("content");
+			String work_number = subject1.substring(subject1.indexOf("-") + 1, subject1.indexOf(":"));
 			try {
 				Teacher teacher =new TeacherDaoImpl().find2(user);
 				MailSenter mailsend =new MailSenter("smtp.qq.com",teacher.getMail_name(), teacher.getMail_pwd());				
 				String starttimestr =sdf.format(new Date());
 				java.util.Date da2 = sdf.parse(starttimestr);
 				java.sql.Timestamp start_time = new java.sql.Timestamp(da2.getTime());
-				java.util.Date da1 = sdf.parse(end_timeStr);
-				java.sql.Timestamp end_time = new java.sql.Timestamp(da1.getTime());
-				WorkMade workmode = new WorkMade(subject1,content,course,start_time,end_time,user,course);
+				int number = Integer.parseInt(work_number);
+				//java.util.Date da1 = sdf.parse(end_timeStr);
+				//java.sql.Timestamp end_time = new java.sql.Timestamp(da1.getTime());
+				WorkMade workmode = new WorkMade(subject1,content,course,number,start_time,user,course);
 				new WorkMadeDaoImpl().inSert(workmode);
 				mailsend.send("smtp.qq.com",teacher.getPeasonmail(),subject,content);
 				if(new CourseDaoImpl().queryWorks_number(user, course)){
@@ -101,13 +103,15 @@ public class DoGetMail extends HttpServlet {
 						int stu_number= courseDaoImpl.findNumber(user,maillist.get(i).getCourse());
 						object.put("course", maillist.get(i).getCourse());
 						object.put("subject", maillist.get(i).getSubject());
-						object.put("content", maillist.get(i).getContent());		
+						object.put("content", maillist.get(i).getContent());
+						object.put("work_number", maillist.get(i).getWork_number());
 						object.put("stu_number",""+stu_number);
 						object.put("time", maillist.get(i).getSentdata());
 						arrays.add(object);
 					}
 					array.put("data", arrays.toString());
 					array.put("code", "success");
+					System.out.println("------教师身份，任务接收成功-----");
 				}				
                 //学生部分：任务内容接收
 				else if(str.equals("student")){
@@ -142,7 +146,7 @@ public class DoGetMail extends HttpServlet {
 				String str =new UserDaoImpl().SearchType(user);				
                 //老师部分，作业邮件内容接收
 				if(str.equals("teacher")){
-					maillist = MailReceive.getAllMailByTeacher(user);
+					/*maillist = MailReceive.getAllMailByTeacher(user);
 					CourseDaoImpl courseDaoImpl = new CourseDaoImpl();
 					int a=1;
 					for (int i = 0; i < maillist.size(); i++) {
@@ -161,7 +165,7 @@ public class DoGetMail extends HttpServlet {
 					}
 					array.put("data", arrays.toString());
 					array.put("code", "success");
-					System.out.println("---教师身份:作业接收成功---");
+					System.out.println("---教师身份:作业接收成功---");*/
 				}				
                 //学生部分：作业邮件内容接收
 				else if(str.equals("student")){
@@ -196,26 +200,6 @@ public class DoGetMail extends HttpServlet {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}	
-		}
-		/*
-		 * 收作业功能，学生邮件作业附件下载
-		 * 
-		 */
-		else if(action.equals("receive2")){
-			try {
-				array.put("code", "success");
-				array.put("msg", "作业下载成功");
-				array.put("data", "");
-				System.out.println("作业下载成功");
-				maillist = MailReceive.getAllMailByTeacher(user);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				array.put("code", "suc");
-				array.put("msg", "作业下载失败");
-				array.put("data", "");
-				System.out.println("作业下载失败");
-			}			
 		}
 		/*
 		 * 学生学号收集功能
@@ -274,7 +258,7 @@ public class DoGetMail extends HttpServlet {
 						if(i>0){
 							String worknumber=String.valueOf(i);					
 							String imagesPath = request.getSession().getServletContext().getRealPath("images");
-							(new ExportExcel()).test(imagesPath, docsPath);
+							(new ExportExcel()).test(imagesPath, docsPath,user,course);
 							String zipsPath = request.getSession().getServletContext().getRealPath("zips");
 							File sourceFilePath=new File(docsPath);
 							File zipFilePath=new File(zipsPath);

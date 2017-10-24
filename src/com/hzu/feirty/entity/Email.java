@@ -17,7 +17,8 @@ public class Email  {
     private String to;
     private String cc;
     private String bcc;
-    private String subject;
+    private String work_number;
+	private String subject;
     private String sentdata;
     private String content;
     private String course;
@@ -26,6 +27,13 @@ public class Email  {
     private boolean news;
     private ArrayList<String> attachments;
     private String attachmentname;
+    public String getWork_number() {
+		return work_number;
+	}
+
+	public void setWork_number(String work_number) {
+		this.work_number = work_number;
+	}
     public String getAttachmentname() {
 		return attachmentname;
 	}

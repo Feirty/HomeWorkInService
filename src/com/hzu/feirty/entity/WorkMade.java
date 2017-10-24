@@ -10,15 +10,15 @@ public class WorkMade {
 	private Timestamp end_time;
 	private String teacher_name;
 	private String course_name;
-	private String work_number;
+	private int work_number;
 	
 	public WorkMade(){
 		super();
 	}
-	public WorkMade(String workname,String content,String course_name,Timestamp start_time,Timestamp end_time,String teaname,String course){
+	public WorkMade(String workname,String content,String course_name,Integer work_number,Timestamp start_time,String teaname,String course){
 		this.work_name = workname;
 		this.work_content = content;
-		this.end_time = end_time;
+		this.work_number = work_number;
 		this.teacher_name = teaname;
 		this.start_time = start_time;
 		this.course_name = course;
@@ -30,10 +30,10 @@ public class WorkMade {
 	public void setStart_time(Timestamp start_time) {
 		this.start_time = start_time;
 	}
-	public String getWork_number() {
+	public int getWork_number() {
 		return work_number;
 	}
-	public void setWork_number(String work_number) {
+	public void setWork_number(int work_number) {
 		this.work_number = work_number;
 	}
 	

@@ -99,11 +99,11 @@ public class MailReceive {
 		}
 		return mailList;
 	}
-	public static List<Email>  getAllMailByTeacher(String name) throws Exception{
-		List<Email> mailList = new ArrayList<Email>();
+	public static int  getWorksNumber(String name,String course,String work_number) throws Exception{
 		TeacherDaoImpl tDao = new TeacherDaoImpl();
 		Teacher teacher = tDao.find2(name);
 		String number="";
+		int a=0;
 		String mail_name =teacher.getMail_name();
 		String mail_pwd = teacher.getMail_pwd();
 		Store store =ConnUtil.login("pop.qq.com",mail_name,mail_pwd);
@@ -113,14 +113,13 @@ public class MailReceive {
         if (mailCount == 0) {
             folder.close(true);
             store.close();
-            return null;
+            return -1;
         } else {
             // 取得所有的邮件
             Message[] messages = folder.getMessages();
              for (int i = 0; i < messages.length; i++) {
             	Email mail = new Email();
              	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);
-             	//pmm.getSubject().contains("[作业]") ||pmm.getSubject().contains("[布置作业]"
              	String str=pmm.getSubject();  
              	String regex = "[0-9]{13}"; //正则表达式  
              	Pattern pattern = Pattern.compile(regex);   
@@ -131,32 +130,16 @@ public class MailReceive {
              		number ="";
              	}           
                  	if(!number.equals("")){
-                 		String course = str.substring(str.indexOf("[") + 1, str.indexOf("]"));
-                 		if(new StudentDaoImpl().isExit(name,number,course)){
-                 			String sub = pmm.getSubject();
-                         	String subject = sub.substring(sub.indexOf("]")+1);
-                        	mail.setFrom(pmm.getFrom());
-                        	System.out.println(pmm.getFrom());
-                        	mail.setSubject(subject);
-                        	System.out.println("主题："+subject);
-                        	mail.setCourse(course);
-                        	pmm.getMailContent((Part)messages[i]);
-                        	mail.setContent(pmm.getBodyText());
-                        	System.out.println(pmm.getBodyText());
-                        	pmm.setDateFormat("yy.MM.dd-HH:mm");
-                        	mail.setSentdata(pmm.getSentDate());
-                        	mail.setMessageID(pmm.getMessageId());
-                        	mail.setAttachmentname(pmm.getFilename((MimeMessage)messages[i]));
-                        	EmailDaoImpl eDaoImpl =new EmailDaoImpl();
-                        	eDaoImpl.Insert(mail);
-                            mailList.add(mail);// 添加到邮件列表中
-                 			
-                 		}
-             	
-                 	}        	            	
-             	
+                 		String course1 = str.substring(str.indexOf("[") + 1, str.indexOf("]"));
+                 		String workString = str.substring(str.length()-1);
+                 		if(course.equals(course1)&& work_number.equals(workString)&&new StudentDaoImpl().isExit(name,number,course1)){
+                 			if(pmm.isContainAttach((Part)messages[i])){
+                 				a++;               				
+                 			}                                 			
+                 		}            	
+                 	}        	            	            	
             }
-            return mailList;
+             return a;
         }		
 	}
 	
@@ -288,19 +271,20 @@ public class MailReceive {
             	Email mail = new Email();
              	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);         
              	String str=pmm.getSubject();  
-             	if(pmm.getSubject().contains("[课程:")){
+             	if(str.contains("[课程:")){
              		String course = str.substring(str.indexOf(":") + 1, str.indexOf("]"));
              		String sub = pmm.getSubject();
              		String subject = sub.substring(sub.indexOf("]")+1);
+             		String work_String = subject.substring(subject.indexOf("-") + 1, subject.indexOf(":"));
+             		int work_number =getWorksNumber(name, course, work_String);
 	            	mail.setSubject(subject);
-	            	System.out.println(pmm.getSubject());
 	            	pmm.getMailContent((Part)messages[i]);        
 	            	mail.setContent(pmm.getBodyText());
 	            	mail.setCourse(course);
-	            	System.out.println(pmm.getBodyText());
+	            	mail.setWork_number(""+work_number);
 	            	pmm.setDateFormat("yy.MM.dd-HH:mm");
 	            	mail.setSentdata(pmm.getSentDate());          
-	            	EmailDaoImpl eDaoImpl =new EmailDaoImpl();
+	            	//EmailDaoImpl eDaoImpl =new EmailDaoImpl();
 	            	//eDaoImpl.Insert(mail);
 	                mailList.add(mail);// 添加到邮件列表中
              	}
@@ -367,7 +351,7 @@ public class MailReceive {
 	                			String filesize =getFileSize.FormetFileSize(getFileSize.getFileSizes(path));         			           		
 	                			//将作业得学号、文件名、文件大小、发送时间存入homework表中
 	                			HomeWorkDaoImpl HomeWorkDaoImpl = new HomeWorkDaoImpl();
-	                			HomeWork homework =new HomeWork(mail_id,number,filename,filesize,sendtime,course,1);
+	                			HomeWork homework =new HomeWork(mail_id,number,filename,filesize,sendtime,name,course,1);
 	                			HomeWorkDaoImpl.inSert(homework);
 	                			shu++;
 	                		}
@@ -396,7 +380,7 @@ public class MailReceive {
             Message[] messages = folder.getMessages();
              for (int i = 0; i < messages.length; i++) {
             	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);
-            	if(pmm.getSubject().contains("[学号]")){
+            	if(pmm.getSubject().startsWith("[学号]")){
             		if(pmm.isContainAttach((Part)messages[i])){
             			String course_name = pmm.getSubject().substring(4);
             			File file=new File("c:\\tmp\\");
@@ -437,7 +421,7 @@ public class MailReceive {
              for (int i = 0; i < messages.length; i++) {
             	//Email mail = new Email();
             	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);
-            	if(pmm.getSubject().contains("[更新][学号]")){
+            	if(pmm.getSubject().startsWith("[更新][学号]")){
             		if(pmm.isContainAttach((Part)messages[i])){
             			String course_name = pmm.getSubject().substring(8);
             			if(new CourseDaoImpl().find(course_name, name)){

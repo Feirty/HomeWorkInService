@@ -85,16 +85,17 @@ public class HomeWorkDaoImpl extends BaseDaoImpl{
 		}
 	}
 	/*
-	 * 查询所有的作业数据
+	 * 查询所有的作业数据,参数：学生id，课程号
 	 * @return list<HomeWork>
 	 * 
 	 */
 	@SuppressWarnings("finally")
-	public List<HomeWork> QueryAll() throws SQLException{
+	public List<HomeWork> QueryAll(String stu_id,String course_name) throws SQLException{
 		conn = this.getConnection();
 		List<HomeWork> homeworklist = new ArrayList<HomeWork>();
 		try {
-			pstmt = conn.prepareStatement("select * from homework");
+			pstmt = conn.prepareStatement("select * from homework where stu_id = '"+stu_id+"'" +
+					"and course_name = '"+course_name+"'");
 			rs = pstmt.executeQuery();
 			while(rs.next()){				
 				HomeWork homework=new HomeWork();
@@ -108,6 +109,38 @@ public class HomeWorkDaoImpl extends BaseDaoImpl{
 				homeworklist.add(homework);
 				}
 			
+		} catch (Exception e) {
+			homeworklist.add(null);
+			return homeworklist;
+		}finally {
+			this.closeAll(null, pstmt, conn);
+			return homeworklist;
+		}			
+	}
+	
+	/*
+	 * 查询所有的作业数据,参数：学生id，课程号
+	 * @return list<HomeWork>
+	 * 
+	 */
+	@SuppressWarnings("finally")
+	public List<HomeWork> QueryAll2(String teacher_name,String course_name) throws SQLException{
+		conn = this.getConnection();
+		List<HomeWork> homeworklist = new ArrayList<HomeWork>();
+		try {
+			pstmt = conn.prepareStatement("select * from homework where teacher_name = '"+teacher_name+"'" +
+					"and course_name = '"+course_name+"'");
+			rs = pstmt.executeQuery();
+			while(rs.next()){				
+				HomeWork homework=new HomeWork();
+				homework.setId(rs.getString(1));
+				homework.setStu_id(rs.getString(2));
+				homework.setFile_name(rs.getString(3));
+				homework.setFile_size(rs.getString(4));
+				homework.setFile_time(rs.getTimestamp(5));
+				homework.setCourse_name(rs.getString(6));
+				homeworklist.add(homework);
+				}
 		} catch (Exception e) {
 			homeworklist.add(null);
 			return homeworklist;

@@ -241,11 +241,11 @@ public class ExportExcel<T> {
 		}
 	}
 
-	public void test(String imagesPath, String docsPath) throws IOException, SQLException {
+	public void test(String imagesPath, String docsPath,String teacher_name,String course) throws IOException, SQLException {
 		// 测试学生
 		ExportExcel<HomeWork> ex = new ExportExcel<HomeWork>();
 		String[] headers = {"编号","学号", "作业名称", "作业大小","作业发送时间"};
-		List<HomeWork> dataset = new HomeWorkDaoImpl().QueryAll();
+		List<HomeWork> dataset = new HomeWorkDaoImpl().QueryAll2(teacher_name,course);
 		OutputStream out = new FileOutputStream(docsPath + FILE_SEPARATOR
 				+ "作业统计信息.xls");
 		ex.exportExcel(headers, dataset, out);

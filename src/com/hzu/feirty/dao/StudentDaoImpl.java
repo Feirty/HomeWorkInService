@@ -215,6 +215,18 @@ public class StudentDaoImpl extends BaseDaoImpl {
 		return list;
 	}
 	
+	public String QueryNumber(String name,String course) throws SQLException{
+		conn = this.getConnection();
+		pstmt = conn.prepareStatement("select number from student where name='"+name+"' and " +
+				"course = '"+course+"'");
+		rs = pstmt.executeQuery();
+		List<String> list = new ArrayList<String>();
+		while(rs.next()){			 
+			   return rs.getString("number");
+		}
+		return null;
+	}
+	
 	public List<String> QueryCourse(String name) throws SQLException{
 		conn = this.getConnection();
 		pstmt = conn.prepareStatement("select course from student where name='"+name+"'");
