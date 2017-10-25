@@ -60,6 +60,7 @@ public class TeacherDaoImpl extends BaseDaoImpl {
 		rs = pstmt.executeQuery();
 		if (rs.next()) {
 			Teacher tea =new Teacher();
+			tea.setNickname(rs.getString("mail_name"));
 			tea.setMail_name(rs.getString("mail_name"));
 			tea.setMail_pwd(rs.getString("mail_pwd"));
 			tea.setPeasonmail(rs.getString("peasonmail"));

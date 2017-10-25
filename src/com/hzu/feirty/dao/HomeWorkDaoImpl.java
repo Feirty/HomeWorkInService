@@ -24,13 +24,15 @@ public class HomeWorkDaoImpl extends BaseDaoImpl{
 		conn = this.getConnection();
 		if(true){    //!isExist(homework.getStu_id())
 			try {
-				pstmt = conn.prepareStatement("insert into homework(stu_id,file_name,file_size,file_time,course_name,file_number)values(?,?,?,?,?,?)");
-				pstmt.setString(1, homework.getStu_id());
-				pstmt.setString(2, homework.getFile_name());
-				pstmt.setString(3, homework.getFile_size());
-				pstmt.setTimestamp(4, homework.getFile_time());
-				pstmt.setString(5, homework.getCourse_name());
-				pstmt.setInt(6, homework.getFile_number());
+				pstmt = conn.prepareStatement("insert into homework(id,stu_id,file_name,file_size,file_time,course_name,teacher_name,file_number)values(?,?,?,?,?,?,?,?)");
+				pstmt.setString(1, homework.getId());
+				pstmt.setString(2, homework.getStu_id());
+				pstmt.setString(3, homework.getFile_name());
+				pstmt.setString(4, homework.getFile_size());
+				pstmt.setTimestamp(5, homework.getFile_time());
+				pstmt.setString(6, homework.getCourse_name());
+				pstmt.setString(7, homework.getTeacher_name());
+				pstmt.setInt(8, homework.getFile_number());
 				pstmt.executeUpdate();
 				return true;
 			} catch (SQLException e) {

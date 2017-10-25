@@ -5,7 +5,19 @@ public class Course {
 	private int stu_number;
 	private String school;
 	private String tea_name;
+	private String state;
 	private int works;
+	
+	public  Course(){
+		super();
+	}
+	public Course(String course,String teacher,int work_number,String state){
+		this.name = course;
+		this.tea_name =teacher;
+		this.works = work_number;
+		this.state =state;
+	}
+	
 	public int getWorks() {
 		return works;
 	}
@@ -17,6 +29,13 @@ public class Course {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
 	}
 	public int getStu_number() {
 		return stu_number;

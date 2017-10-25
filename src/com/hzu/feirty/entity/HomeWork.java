@@ -10,17 +10,17 @@ public class HomeWork {
 	private Timestamp file_time;
 	private String course_name;
 	private String teacher_name;
+	private int file_number;
 	public String getTeacher_name() {
 		return teacher_name;
 	}
 	public void setTeacher_name(String teacher_name) {
 		this.teacher_name = teacher_name;
 	}
-	private int file_number;
 	public HomeWork(){
 		super();
 	}
-	public HomeWork(String id,String stu_id,String file_name,String file_size,Timestamp file_time,String course_name,String teacher,int file_number){
+	public HomeWork(String id,String stu_id,String file_name,String file_size,Timestamp file_time,String teacher,String course_name,int file_number){
 		this.stu_id =stu_id;
 		this.file_name =file_name;
 		this.file_size =file_size;

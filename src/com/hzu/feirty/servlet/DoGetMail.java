@@ -66,17 +66,17 @@ public class DoGetMail extends HttpServlet {
 			String content = request.getParameter("content");
 			String work_number = subject1.substring(subject1.indexOf("-") + 1, subject1.indexOf(":"));
 			try {
-				Teacher teacher =new TeacherDaoImpl().find2(user);
-				MailSenter mailsend =new MailSenter("smtp.qq.com",teacher.getMail_name(), teacher.getMail_pwd());				
+				Teacher teacher =new TeacherDaoImpl().find2(user);							
 				String starttimestr =sdf.format(new Date());
 				java.util.Date da2 = sdf.parse(starttimestr);
 				java.sql.Timestamp start_time = new java.sql.Timestamp(da2.getTime());
 				int number = Integer.parseInt(work_number);
-				//java.util.Date da1 = sdf.parse(end_timeStr);
-				//java.sql.Timestamp end_time = new java.sql.Timestamp(da1.getTime());
-				WorkMade workmode = new WorkMade(subject1,content,course,number,start_time,user,course);
+				WorkMade workmode = new WorkMade(subject1,content,course,number,start_time,user,course);				
 				new WorkMadeDaoImpl().inSert(workmode);
+				MailSenter mailsend =new MailSenter("smtp.qq.com",teacher.getMail_name(), teacher.getMail_pwd());
 				mailsend.send("smtp.qq.com",teacher.getPeasonmail(),subject,content);
+				Course courses =  new Course(user,course,number,"未收取");
+				new CourseDaoImpl().changeSate(courses);				
 				if(new CourseDaoImpl().queryWorks_number(user, course)){
 					array.put("code", "success");
 					array.put("msg", "--任务发布成功--");
@@ -94,7 +94,8 @@ public class DoGetMail extends HttpServlet {
 			JSONArray arrays = new JSONArray();		
 			try {
 				String str =new UserDaoImpl().SearchType(user);				
-                //老师部分，任务内容接收
+                //老师部分，作业内容接收
+				
 				if(str.equals("teacher")){				
 					maillist = MailReceive.getAllReceiveWorkT(user);
 					CourseDaoImpl courseDaoImpl = new CourseDaoImpl();		
@@ -126,6 +127,7 @@ public class DoGetMail extends HttpServlet {
 							object.put("course", maillist.get(i).getCourse());
 							object.put("subject", maillist.get(i).getSubject());
 							object.put("content", maillist.get(i).getContent());
+							object.put("work_number", maillist.get(i).getWork_number());
 							object.put("stu_number",""+stu_number);
 							object.put("time", maillist.get(i).getSentdata());
 							arrays.add(object);							
@@ -202,8 +204,8 @@ public class DoGetMail extends HttpServlet {
 			}	
 		}
 		/*
-		 * 学生学号收集功能
-		 * 
+		 * 添加课程功能
+		 * 关于课程、学号
 		 */
 		else if(action.equals("COURSE")){
 			try {
@@ -239,22 +241,26 @@ public class DoGetMail extends HttpServlet {
 			}			
 		}
 		/*
-		 * 学生作业附件打包发送功能
-		 * 
+		 * 教师接收作业功能
+		 * 关于附件下载
+		 * 附件打包
+		 * 附件邮件发送
 		 */
 		else if(action.equals("RECEIVEHOMEWORK")){
 			try {
 				String course = request.getParameter("course");
+				String workString = request.getParameter("work_number");
+				int work_number = Integer.parseInt(workString);
 				String type=new UserDaoImpl().SearchType(user);
 				if(type.equals("teacher")){
 					Teacher teacher = new TeacherDaoImpl().find2(user);
 					if(!teacher.getPeasonmail().equals("")){
-						DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+						DateFormat dateFormat = new SimpleDateFormat("yyMMddhhmm");
 						String date =dateFormat.format(new Date());						
 						//作业匹配下载				
-						String docsPath = request.getSession().getServletContext().getRealPath("docs"+date);
+						String docsPath = request.getSession().getServletContext().getRealPath(course+"/"+date);
 						//  i为作业的数量
-						int i = MailReceive.getAllMailByTeacher2(user,course,docsPath);
+						int i = MailReceive.getAllMailByTeacher2(user,course,workString,docsPath);
 						if(i>0){
 							String worknumber=String.valueOf(i);					
 							String imagesPath = request.getSession().getServletContext().getRealPath("images");
@@ -285,8 +291,11 @@ public class DoGetMail extends HttpServlet {
 	            			java.sql.Timestamp sendtime = new java.sql.Timestamp(da.getTime());
 	            			ConstructionDaoImpl constructionDaoImpl = new ConstructionDaoImpl();
 	            			//统计作业的提交情况
-	            			Construction construction = new Construction(user, filenumber, zip_name, zip_size,sendtime);
+	            			Construction construction = new Construction(user, filenumber, zip_name, zip_size,course,sendtime);
 	            			constructionDaoImpl.inSert(construction);
+	            			//修改课程作业状态
+	            			Course course2 =new Course(course, user, work_number, "已收取");
+	            			new CourseDaoImpl().changeSate(course2);
 	            			array.put("code", "success");
 							array.put("msg", "作业打包发送成功");
 							array.put("zipname",zip_name);

@@ -15,20 +15,21 @@ public class CourseDaoImpl extends BaseDaoImpl{
 	Connection conn = null;
 	List<Course> list = null;
 	
-	
+	/*
+	 * 首次添加课程执行的函数
+	 * 
+	 */
 	public boolean inSert(Course course) throws SQLException{
 		conn = this.getConnection();
 		if(!find(course.getName(),course.getTea_name())){
 			try {
-				pstmt = conn.prepareStatement("insert into course(name,stu_number,tea_name,works_number)values(?,?,?,?)");
+				pstmt = conn.prepareStatement("insert into course(name,stu_number,tea_name)values(?,?,?)");
 				pstmt.setString(1, course.getName());
 				pstmt.setInt(2,course.getStu_number());
-				pstmt.setString(3,course.getTea_name());
-				pstmt.setInt(4, 0);
+				pstmt.setString(3,course.getTea_name());		
 				pstmt.executeUpdate();
 				return true;
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return false;
 			}finally {
@@ -38,13 +39,37 @@ public class CourseDaoImpl extends BaseDaoImpl{
 			return false;
 		}		
 	}
-	//更新
+	
+	/*
+	 * 更新课程执行的函数
+	 */
 	public boolean update(Course course) throws SQLException {
 		conn = this.getConnection();
 		try {
 			pstmt = conn.prepareStatement("update course set stu_number=? where tea_name='"
 							+ course.getTea_name() + "'and name='"+course.getName()+"'");
 			pstmt.setInt(1, course.getStu_number());
+			pstmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}finally {
+			this.closeAll(null, pstmt, conn);
+		}
+	}
+	
+	/*
+	 * 发送作业时，更新作业状态时执行的函数
+	 */
+	public boolean changeSate(Course course) throws SQLException {
+		conn = this.getConnection();
+		try {
+			pstmt = conn.prepareStatement("update course set works_number=?,state=? where tea_name='"
+							+ course.getTea_name() + "'and name='"+course.getName()+"'");
+			pstmt.setInt(1, course.getWorks());
+			pstmt.setString(2,course.getState());
 			pstmt.executeUpdate();
 			return true;
 		} catch (SQLException e) {

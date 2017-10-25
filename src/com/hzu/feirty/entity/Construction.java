@@ -10,14 +10,23 @@ public class Construction {
 	private String zipname;
 	private String zipsize;
 	private Timestamp time;
+	private String work_made_number;
 	
-	public Construction(String teacher_name,long number,String zipname,String zipsize,Timestamp time){
+	public Construction(String teacher_name,long number,String zipname,String zipsize,String course_name,Timestamp time){
 		this.teacher_name = teacher_name;
+		this.course_name = course_name;
 		this.number= number;
 		this.zipname = zipname;
 		this.zipsize = zipsize;
 		this.time = time;
 		
+	}
+	
+	public String getWork_made_number() {
+		return work_made_number;
+	}
+	public void setWork_made_number(String work_made_number) {
+		this.work_made_number = work_made_number;
 	}
 	public String getCourse_name() {
 		return course_name;
