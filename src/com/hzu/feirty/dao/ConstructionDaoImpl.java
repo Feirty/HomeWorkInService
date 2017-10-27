@@ -63,6 +63,29 @@ public class ConstructionDaoImpl extends BaseDaoImpl{
 	}
 	
 	/*
+	 * 查询收取作业的最新时间
+	 * @return Date
+	 * 
+	 */
+	public boolean queryNumber(String name,String course_name,String work_made_number){
+		conn = this.getConnection();
+		try{
+			pstmt = conn.prepareStatement("select * from construction where teacher_name='"+name+"' and course_name='"+course_name+"' and work_made_number='"+work_made_number+"'");
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				return true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}finally {
+			this.closeAll(null, pstmt, conn);
+		}
+		return false;
+	}
+	
+	/*
 	 * 查询收取作业信息表是否为空
 	 * @return boolean
 	 * 

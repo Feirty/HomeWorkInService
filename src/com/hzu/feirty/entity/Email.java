@@ -22,11 +22,29 @@ public class Email  {
     private String sentdata;
     private String content;
     private String course;
+	private String submit_state;
+    private String receive_state;
 	private boolean replysign;
     private boolean html;
     private boolean news;
     private ArrayList<String> attachments;
     private String attachmentname;
+    
+    public String getSubmit_state() {
+		return submit_state;
+	}
+
+	public void setSubmit_state(String submit_state) {
+		this.submit_state = submit_state;
+	}
+
+	public String getReceive_state() {
+		return receive_state;
+	}
+
+	public void setReceive_state(String receive_state) {
+		this.receive_state = receive_state;
+	}
     public String getWork_number() {
 		return work_number;
 	}

@@ -102,12 +102,12 @@ public class StudentDaoImpl extends BaseDaoImpl {
 	 *
 	 * @return
 	 */
-	public Student Search(String name) {
+	public Student Search(String name,String course) {
 		conn = this.getConnection();
 		Student content = null;
 		try {
 			pstmt = conn.prepareStatement("select * from student where name='"
-					+ name + "'");
+					+ name + "' and course='"+course+"'");
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
 				content = new Student();
@@ -214,15 +214,29 @@ public class StudentDaoImpl extends BaseDaoImpl {
 		}
 		return list;
 	}
+
 	
 	public String QueryNumber(String name,String course) throws SQLException{
 		conn = this.getConnection();
 		pstmt = conn.prepareStatement("select number from student where name='"+name+"' and " +
 				"course = '"+course+"'");
 		rs = pstmt.executeQuery();
-		List<String> list = new ArrayList<String>();
 		while(rs.next()){			 
 			   return rs.getString("number");
+		}
+		return null;
+	}
+	
+	/*
+	 * 查询教师
+	 */
+	public String QueryOneTeacher(String name,String course) throws SQLException{
+		conn = this.getConnection();
+		pstmt = conn.prepareStatement("select teacher from student where name='"+name+"' and " +
+				"course = '"+course+"'");
+		rs = pstmt.executeQuery();
+		while(rs.next()){			 
+			   return rs.getString("teacher");
 		}
 		return null;
 	}

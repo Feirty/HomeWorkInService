@@ -95,7 +95,6 @@ public class DoGetMail extends HttpServlet {
 			try {
 				String str =new UserDaoImpl().SearchType(user);				
                 //老师部分，作业内容接收
-				
 				if(str.equals("teacher")){				
 					maillist = MailReceive.getAllReceiveWorkT(user);
 					CourseDaoImpl courseDaoImpl = new CourseDaoImpl();		
@@ -116,23 +115,27 @@ public class DoGetMail extends HttpServlet {
 				}				
                 //学生部分：任务内容接收
 				else if(str.equals("student")){
-					maillist = MailReceive.getAllReceiveWorkS(user);
-					CourseDaoImpl courseDaoImpl = new CourseDaoImpl();
-					StudentDaoImpl stuDao = new StudentDaoImpl();
-					Student student = stuDao.Search(user);			
-					for (int i = 0; i < maillist.size(); i++) {
-						if(student.getCourse().equals(maillist.get(i).getCourse())){
+					List<String> courselist = new StudentDaoImpl().QueryCourse(user);
+					for(int a =0;a<courselist.size();a++){
+						List<Email> mList = new ArrayList<Email>();
+						mList = MailReceive.getAllReceiveWorkS(user,courselist.get(a));
+						CourseDaoImpl courseDaoImpl = new CourseDaoImpl();
+						StudentDaoImpl stuDao = new StudentDaoImpl();
+						Student student = stuDao.Search(user,courselist.get(a));			
+						for (int i = 0; i < mList.size(); i++) {					
 							JSONObject object = new JSONObject();
-							int stu_number= courseDaoImpl.findNumber(student.getTeacher(),maillist.get(i).getCourse());
-							object.put("course", maillist.get(i).getCourse());
-							object.put("subject", maillist.get(i).getSubject());
-							object.put("content", maillist.get(i).getContent());
-							object.put("work_number", maillist.get(i).getWork_number());
+							int stu_number= courseDaoImpl.findNumber(student.getTeacher(),mList.get(i).getCourse());				
+							object.put("course", mList.get(i).getCourse());
+							object.put("subject", mList.get(i).getSubject());
+							object.put("content", mList.get(i).getContent());
+							object.put("work_number", mList.get(i).getWork_number());
 							object.put("stu_number",""+stu_number);
-							object.put("time", maillist.get(i).getSentdata());
-							arrays.add(object);							
-						}					
-					}
+							object.put("submit_state", mList.get(i).getSubmit_state());
+							object.put("receive_state", mList.get(i).getReceive_state());
+							object.put("time", mList.get(i).getSentdata());
+							arrays.add(object);												
+						}	
+					}				
 					array.put("data", arrays.toString());
 					array.put("code", "success");			
 					System.out.println("---学生身份:任务接收成功---");
@@ -148,7 +151,8 @@ public class DoGetMail extends HttpServlet {
 				String str =new UserDaoImpl().SearchType(user);				
                 //老师部分，作业邮件内容接收
 				if(str.equals("teacher")){
-					/*maillist = MailReceive.getAllMailByTeacher(user);
+					//这个函数改！
+					maillist = MailReceive.getAllMail(user);
 					CourseDaoImpl courseDaoImpl = new CourseDaoImpl();
 					int a=1;
 					for (int i = 0; i < maillist.size(); i++) {
@@ -167,14 +171,14 @@ public class DoGetMail extends HttpServlet {
 					}
 					array.put("data", arrays.toString());
 					array.put("code", "success");
-					System.out.println("---教师身份:作业接收成功---");*/
+					System.out.println("---教师身份:作业接收成功---");
 				}				
                 //学生部分：作业邮件内容接收
 				else if(str.equals("student")){
 					maillist = MailReceive.getAllMail(user);
 					StudentDaoImpl stuDao = new StudentDaoImpl();
 					Student student = new Student();
-					student = stuDao.Search(user);
+					student = stuDao.Search(user,"");
 					CourseDaoImpl courseDaoImpl = new CourseDaoImpl();		
 					int a=1;
 					for (int i = 0; i < maillist.size(); i++) {
@@ -212,7 +216,8 @@ public class DoGetMail extends HttpServlet {
 				array.put("code", "success");
 				array.put("msg", "学号添加成功");
 				array.put("data", "");
-				if(MailReceive.getAllMailByNumber(user)){
+				String Path = request.getSession().getServletContext().getRealPath("student");
+				if(MailReceive.getAllMailByNumber(user,Path)){
 					System.out.println("学号添加成功");					
 				}				
 			} catch (Exception e) {
@@ -228,7 +233,8 @@ public class DoGetMail extends HttpServlet {
 				array.put("code", "success");
 				array.put("msg", "学号添加成功");
 				array.put("data", "");
-				if(MailReceive.updateNumber(user)){
+				String Path = request.getSession().getServletContext().getRealPath("student");
+				if(MailReceive.updateNumber(user,Path)){
 					System.out.println("课程更新成功");					
 				}				
 			} catch (Exception e) {
