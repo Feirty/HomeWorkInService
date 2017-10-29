@@ -181,7 +181,6 @@ public class MailReceive {
             // 取得所有的邮件
             Message[] messages = folder.getMessages();
              for (int i = 0; i < messages.length; i++) {
-            	Email mail = new Email();
              	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);
              	String str=pmm.getSubject();  
              	String regex = "[0-9]{13}"; //正则表达式  
@@ -195,7 +194,7 @@ public class MailReceive {
                  	if(!number.equals("")){
                  		String course1 = str.substring(str.indexOf("[") + 1, str.indexOf("]"));
                  		String workString = str.substring(str.length()-1);
-                 		if(course.equals(course1)&& work_number.equals(workString)&&new StudentDaoImpl().isExit(name,number,course1)){
+                 		if(course.equals(course1)&& work_number.equals(workString)&&new StudentDaoImpl().isExit(tea_name,number,course1)){
                  			if(pmm.isContainAttach((Part)messages[i])){
                  				a++;
                  				if(number.equals(stu_number)){
@@ -410,7 +409,7 @@ public class MailReceive {
             for(i = 0; i < messages.length; i++){
             	ConstructionDaoImpl conDao = new ConstructionDaoImpl();   
             	PraseMimeMessage pmm = new PraseMimeMessage((MimeMessage)messages[i]);
-            	if(conDao.queryIsNull()||conDao.queryTime(name,course,work_number).before(pmm.getSentDate2())){           
+               //||conDao.queryTime(name,course,work_number).before(pmm.getSentDate2())    
                 	Email mail = new Email();               
                 	String str=pmm.getSubject();  
                 	String regex = "[0-9]{13}"; //正则表达式  
@@ -454,8 +453,7 @@ public class MailReceive {
 	                		}
                  		}             		
                 	}
-                    mailList.add(mail);// 添加到邮件列表中            	
-            		}
+                    mailList.add(mail);// 添加到邮件列表中            	           
             	}
             folder.close(true);
             store.close();

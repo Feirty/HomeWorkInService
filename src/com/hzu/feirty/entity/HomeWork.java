@@ -8,15 +8,9 @@ public class HomeWork {
 	private String file_name;
 	private String file_size;
 	private Timestamp file_time;
+	private int file_number;
 	private String course_name;
 	private String teacher_name;
-	private int file_number;
-	public String getTeacher_name() {
-		return teacher_name;
-	}
-	public void setTeacher_name(String teacher_name) {
-		this.teacher_name = teacher_name;
-	}
 	public HomeWork(){
 		super();
 	}
@@ -28,26 +22,6 @@ public class HomeWork {
 		this.file_number = file_number; 
 		this.teacher_name = teacher;
 		this.course_name = course_name;
-	}
-	
-	public int getFile_number() {
-		return file_number;
-	}
-	public void setFile_number(int file_number) {
-		this.file_number = file_number;
-	}
-	
-	public Timestamp getFile_time() {
-		return file_time;
-	}
-	public void setFile_time(Timestamp file_time) {
-		this.file_time = file_time;
-	}
-	public String  getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
 	}
 	public String getStu_id() {
 		return stu_id;
@@ -67,11 +41,36 @@ public class HomeWork {
 	public void setFile_size(String file_size) {
 		this.file_size = file_size;
 	}
+	public Timestamp getFile_time() {
+		return file_time;
+	}
+	public void setFile_time(Timestamp file_time) {
+		this.file_time = file_time;
+	}
+	
+	public int getFile_number() {
+		return file_number;
+	}
+	public void setFile_number(int file_number) {
+		this.file_number = file_number;
+	}
 	public String getCourse_name() {
 		return course_name;
 	}
 	public void setCourse_name(String course_name) {
 		this.course_name = course_name;
+	}
+	public String getTeacher_name() {
+		return teacher_name;
+	}
+	public void setTeacher_name(String teacher_name) {
+		this.teacher_name = teacher_name;
+	}
+	public String  getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
 	}
 
 }

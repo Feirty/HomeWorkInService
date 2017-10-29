@@ -141,14 +141,15 @@ public class HomeWorkDaoImpl extends BaseDaoImpl{
 				homework.setFile_size(rs.getString(4));
 				homework.setFile_time(rs.getTimestamp(5));
 				homework.setCourse_name(rs.getString(6));
+				homework.setTeacher_name(rs.getString(7));
+				homework.setFile_number(rs.getInt(8));			
 				homeworklist.add(homework);
 				}
-		} catch (Exception e) {
-			homeworklist.add(null);
-			return homeworklist;
+		} catch (Exception e) {		
+			return null;
 		}finally {
 			this.closeAll(null, pstmt, conn);
-			return homeworklist;
+			return null;
 		}			
 	}
 	/*

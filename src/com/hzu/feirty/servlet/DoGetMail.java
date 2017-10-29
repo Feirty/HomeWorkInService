@@ -264,32 +264,34 @@ public class DoGetMail extends HttpServlet {
 						DateFormat dateFormat = new SimpleDateFormat("yyMMddhhmm");
 						String date =dateFormat.format(new Date());						
 						//作业匹配下载				
-						String docsPath = request.getSession().getServletContext().getRealPath(course+"/"+date);
+						String docsPath = request.getSession().getServletContext().getRealPath(course+"/"+"第"+workString+"次作业");
 						//  i为作业的数量
 						int i = MailReceive.getAllMailByTeacher2(user,course,workString,docsPath);
 						if(i>0){
 							String worknumber=String.valueOf(i);					
 							String imagesPath = request.getSession().getServletContext().getRealPath("images");
 							(new ExportExcel()).test(imagesPath, docsPath,user,course);
-							String zipsPath = request.getSession().getServletContext().getRealPath("zips");
+							String zipsPath = request.getSession().getServletContext().getRealPath(course+"/"+"作业汇总");
 							File sourceFilePath=new File(docsPath);
 							File zipFilePath=new File(zipsPath);
-							String fileName="作业附件";									
+							if(!zipFilePath.exists()){
+								zipFilePath.mkdirs();
+                			}								
 							//作业压缩zip
-							MailToZip.mailToZip(sourceFilePath.toString(), zipFilePath.toString(), course+fileName+date);
+							MailToZip.mailToZip(sourceFilePath.toString(), zipFilePath.toString(), course+"第"+workString+"次作业");
 							System.out.println("作业打包成功！");
-							File zippath = new File(zipFilePath.toString()+"\\"+course+fileName+date+".zip");
+							File zippath = new File(zipFilePath.toString()+"\\"+course+"第"+workString+"次作业"+".zip");
 							String attachments = zippath.toString();
 							String mailname = teacher.getMail_name();
 							String mailpwd = teacher.getMail_pwd();
 							String peason_mail = teacher.getPeasonmail();					
 							 // 作业压缩文件发送 
 							MailSenter mailsend =new MailSenter("smtp.qq.com", mailname, mailpwd);					
-							mailsend.send(peason_mail,course+fileName+date,fileName+date,attachments,"收发作业系统");
+							mailsend.send(peason_mail,course+"第"+workString+"次作业","",attachments,"收发作业系统");
 							System.out.println("作业打包文件发送成功！");
 	            			GetFileSize getFileSize = new GetFileSize();
 	            			String zip_size =getFileSize.FormetFileSize(getFileSize.getFileSizes(zippath));
-	            			String zip_name = course+fileName+date+".zip";
+	            			String zip_name = course+"第"+workString+"次作业";
 	            			GetFileSize g = new GetFileSize();
 	            			long filenumber= g.getlist(sourceFilePath);            			            			
 	            			String datestring =sdf.format(new Date());

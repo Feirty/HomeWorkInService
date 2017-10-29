@@ -55,7 +55,7 @@ public class ExportExcel<T> {
 
 	public void exportExcel(String[] headers, Collection<T> dataset,
 			OutputStream out) {
-		exportExcel("测试", headers, dataset, out, "yyyy-MM-dd HH:mm");
+		exportExcel("作业分析", headers, dataset, out, "yyyy-MM-dd HH:mm");
 	}
 
 	public void exportExcel(String[] headers, Collection<T> dataset,
@@ -160,9 +160,10 @@ public class ExportExcel<T> {
 					Object value = getMethod.invoke(t, new Object[] {});
 					// 判断值的类型后进行强制类型转换
 					String textValue = null;
-					// if (value instanceof Integer) {
-					// int intValue = (Integer) value;
-					// cell.setCellValue(intValue);
+					/*if (value instanceof Integer) {
+						 int intValue = (Integer) value;
+						 cell.setCellValue(intValue);
+					 }*/
 					// } else if (value instanceof Float) {
 					// float fValue = (Float) value;
 					// textValue = new HSSFRichTextString(
@@ -244,11 +245,14 @@ public class ExportExcel<T> {
 	public void test(String imagesPath, String docsPath,String teacher_name,String course) throws IOException, SQLException {
 		// 测试学生
 		ExportExcel<HomeWork> ex = new ExportExcel<HomeWork>();
-		String[] headers = {"编号","学号", "作业名称", "作业大小","作业发送时间"};
+		String[] headers = {"学号", "作业名称", "作业大小","作业发送时间","次数"};
 		List<HomeWork> dataset = new HomeWorkDaoImpl().QueryAll2(teacher_name,course);
-		OutputStream out = new FileOutputStream(docsPath + FILE_SEPARATOR
-				+ "作业统计信息.xls");
-		ex.exportExcel(headers, dataset, out);
-		out.close();
+		if(!dataset.equals(null)){
+			OutputStream out = new FileOutputStream(docsPath + FILE_SEPARATOR
+					+ "统计信息2.xls");
+			ex.exportExcel(headers, dataset, out);
+			out.close();
+		}
+		
 	}
 }
