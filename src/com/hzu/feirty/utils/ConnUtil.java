@@ -14,20 +14,12 @@ public class ConnUtil {
         Properties props =  System.getProperties();
         Session session = Session.getDefaultInstance(props);
         try {
-            // 准备连接服务器的会话信息
-           /* Properties props =  System.getProperties();
-            props.setProperty("mail.store.protocol", "pop");
-            props.setProperty("mail.imap.host", "imap.qq.com");
-            props.setProperty("mail.imap.port", "143");
-            */
             /**  QQ邮箱需要建立ssl连接 */
             props.setProperty("mail.pop3.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             props.setProperty("mail.pop3.socketFactory.fallback", "false");
             props.setProperty("mail.pop3.starttls.enable","true");
             props.setProperty("mail.pop3.port", "995");
             props.setProperty("mail.pop3.socketFactory.port", "995");
-            // 创建Session实例对象
-           // Session session = Session.getInstance(props);  //pop3/smtp :jwovgwaypwrebecd
             store = session.getStore("pop3");
             store.connect(host, user, password);
         }

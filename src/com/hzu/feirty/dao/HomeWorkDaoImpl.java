@@ -20,23 +20,93 @@ public class HomeWorkDaoImpl extends BaseDaoImpl{
 	 * @return
 	 * @throws SQLException 
 	 */
-	public boolean inSert(HomeWork homework) throws SQLException{
+	public boolean updateData(HomeWork homework) throws SQLException{
 		conn = this.getConnection();
 		if(true){    //!isExist(homework.getStu_id())
 			try {
-				pstmt = conn.prepareStatement("insert into homework(id,stu_id,file_name,file_size,file_time,course_name,teacher_name,file_number)values(?,?,?,?,?,?,?,?)");
-				pstmt.setString(1, homework.getId());
-				pstmt.setString(2, homework.getStu_id());
-				pstmt.setString(3, homework.getFile_name());
-				pstmt.setString(4, homework.getFile_size());
-				pstmt.setTimestamp(5, homework.getFile_time());
-				pstmt.setString(6, homework.getCourse_name());
-				pstmt.setString(7, homework.getTeacher_name());
-				pstmt.setInt(8, homework.getFile_number());
+				pstmt = conn.prepareStatement("update homework set file_name=?,file_size=?,file_time=? where stu_id='"+homework.getStu_id()+"' AND" +
+						" where course_name='"+homework.getCourse_name()+"' and where file_number='"+homework.getFile_number()+"'");
+				pstmt.setString(1, homework.getFile_name());
+				pstmt.setString(2, homework.getFile_size());
+				pstmt.setTimestamp(3, homework.getFile_time());
+				pstmt.setInt(4, homework.getFile_number());
 				pstmt.executeUpdate();
 				return true;
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
+				e.printStackTrace();			
+			}finally {
+				this.closeAll(null, pstmt, conn);
+			}			
+		}
+		return false;
+	}
+	
+	
+	public boolean save(HomeWork homework) throws SQLException{
+		conn = this.getConnection();
+		if(!isExist(homework.getStu_id(),homework.getCourse_name())){    
+			try {
+				pstmt = conn.prepareStatement("insert into homework(stu_id,course_name,teacher_name,file_number,submit_state)values(?,?,?,?,?)");
+				pstmt.setString(1, homework.getStu_id());	
+				pstmt.setString(2, homework.getCourse_name());
+				pstmt.setString(3, homework.getTeacher_name());
+				pstmt.setInt(4, homework.getFile_number());
+				pstmt.setString(5, homework.getSubmit_state());
+				pstmt.executeUpdate();
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();			
+			}finally {
+				this.closeAll(null, pstmt, conn);
+			}			
+		}
+		return false;
+	}
+	
+	public boolean updateTimes(HomeWork homework) throws SQLException{
+		conn = this.getConnection();
+		if(true){    
+			try {
+				pstmt = conn.prepareStatement("update homework set file_number=?,submit_state=? where teacher_name='"+homework.getTeacher_name()+"' and course='"+homework.getCourse_name()+"'");
+				pstmt.setInt(1, homework.getFile_number());
+				pstmt.setString(2, "未提交");
+				pstmt.executeUpdate();
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();			
+			}finally {
+				this.closeAll(null, pstmt, conn);
+			}			
+		}
+		return false;
+	}
+	
+	public boolean updateName(HomeWork homework) throws SQLException{
+		conn = this.getConnection();
+		if(!isExist(homework.getStu_id(),homework.getCourse_name())){    
+			try {
+				pstmt = conn.prepareStatement("update homework set id=? where stu_id='"+homework.getStu_id()+"' and course='"+homework.getCourse_name()+"'");
+				pstmt.setString(1, homework.getId());	
+				pstmt.executeUpdate();
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();			
+			}finally {
+				this.closeAll(null, pstmt, conn);
+			}			
+		}
+		return false;
+	}
+	public boolean updateSumbitSate(HomeWork homework) throws SQLException{
+		conn = this.getConnection();
+		if(!isExist(homework.getStu_id(),homework.getCourse_name())){    
+			try {
+				pstmt = conn.prepareStatement("update homework set submit_state=? where id='"+homework.getId()+"' and course='"+homework.getCourse_name()+"' and file_number='"+homework.getFile_number()+"'");
+				pstmt.setString(1, homework.getSubmit_state());	
+				pstmt.executeUpdate();
+				return true;
+			} catch (SQLException e) {
 				e.printStackTrace();			
 			}finally {
 				this.closeAll(null, pstmt, conn);
@@ -173,8 +243,7 @@ public class HomeWorkDaoImpl extends BaseDaoImpl{
 		}finally {
 			this.closeAll(null, pstmt, conn);
 		}		
-	}
-	
+	}	
 	public Date queryTime(){
 		conn = this.getConnection();
 		try{
@@ -190,5 +259,26 @@ public class HomeWorkDaoImpl extends BaseDaoImpl{
 			this.closeAll(null, pstmt, conn);
 		}
 		return null;		
+	}
+
+	public boolean querySubmit_state(HomeWork homeWork){
+		conn = this.getConnection();
+		try{
+			pstmt = conn.prepareStatement("select submit_state from homework where stu_id='"+homeWork.getStu_id()+"' " +
+					"and course_name='"+homeWork.getCourse_name()+"' and file_number='"+homeWork.getFile_number()+"'");
+			rs = pstmt.executeQuery();
+			if(rs.next()){
+				String a =rs.getString("submit_state");
+				if(a.equals("已提交")){
+					return true;		
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}finally {
+			this.closeAll(null, pstmt, conn);
+		}
+		return false;		
 	}
 }

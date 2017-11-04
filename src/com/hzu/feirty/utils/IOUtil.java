@@ -14,7 +14,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 
+import com.hzu.feirty.dao.HomeWorkDaoImpl;
 import com.hzu.feirty.dao.StudentDaoImpl;
+import com.hzu.feirty.entity.HomeWork;
 import com.hzu.feirty.entity.Student;
 
 /**
@@ -123,11 +125,13 @@ public class IOUtil {
             BufferedReader br = new BufferedReader(isr);
             while ((str = br.readLine()) != null) {
                 str1 = str;
-                Student student = new Student();
+                Student student = new Student();            
                 student.setNumber(str1);
                 student.setCourse(course);
                 student.setTeacher(teachername);
                 new StudentDaoImpl().Save(student);
+                HomeWork homework = new HomeWork(str1,teachername,course);
+                new HomeWorkDaoImpl().save(homework);
                 numbers++;
                 System.out.println(str+"添加成功");
             }

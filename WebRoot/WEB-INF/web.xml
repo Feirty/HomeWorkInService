@@ -10,8 +10,8 @@
   <servlet>
     <description>This is the description of my J2EE component</description>
     <display-name>This is the display name of my J2EE component</display-name>
-    <servlet-name>DoGetMail</servlet-name>
-    <servlet-class>com.hzu.feirty.servlet.DoGetMail</servlet-class>
+    <servlet-name>DoGetHomeWork</servlet-name>
+    <servlet-class>com.hzu.feirty.servlet.DoGetHomeWork</servlet-class>
   </servlet>
   <servlet>
     <description>This is the description of my J2EE component</description>
@@ -49,13 +49,20 @@
     <servlet-name>DoGetSchool</servlet-name>
     <servlet-class>com.hzu.feirty.servlet.DoGetSchool</servlet-class>
   </servlet>
+  <servlet>
+    <description>This is the description of my J2EE component</description>
+    <display-name>This is the display name of my J2EE component</display-name>
+    <servlet-name>DownloadFile</servlet-name>
+    <servlet-class>com.hzu.feirty.servlet.DownloadFile</servlet-class>
+  </servlet>
+
   <servlet-mapping>
     <servlet-name>DoGetUser</servlet-name>
     <url-pattern>/DoGetUser</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>DoGetMail</servlet-name>
-    <url-pattern>/DoGetMail</url-pattern>
+    <servlet-name>DoGetHomeWork</servlet-name>
+    <url-pattern>/DoGetHomeWork</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>DoGetTeacher</servlet-name>
@@ -80,6 +87,10 @@
   <servlet-mapping>
     <servlet-name>DoGetSchool</servlet-name>
     <url-pattern>/DoGetSchool</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>DownloadFile</servlet-name>
+    <url-pattern>/DownloadFile</url-pattern>
   </servlet-mapping>
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>

@@ -123,7 +123,6 @@ public class UserDaoImpl extends BaseDaoImpl {
 			e.printStackTrace();
 		} finally {
 			this.closeAll(rs, pstmt, conn);
-
 		}
 		return list;
 

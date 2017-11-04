@@ -24,6 +24,7 @@ public class Email  {
     private String course;
 	private String submit_state;
     private String receive_state;
+    private String update_time;
 	private boolean replysign;
     private boolean html;
     private boolean news;
@@ -36,6 +37,15 @@ public class Email  {
 
 	public void setSubmit_state(String submit_state) {
 		this.submit_state = submit_state;
+	}
+	
+
+	public String getUpdate_time() {
+		return update_time;
+	}
+
+	public void setUpdate_time(String update_time) {
+		this.update_time = update_time;
 	}
 
 	public String getReceive_state() {

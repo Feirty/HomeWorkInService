@@ -11,17 +11,56 @@ public class HomeWork {
 	private int file_number;
 	private String course_name;
 	private String teacher_name;
+	private String submit_state;
+	private String receive_state;
 	public HomeWork(){
 		super();
 	}
-	public HomeWork(String id,String stu_id,String file_name,String file_size,Timestamp file_time,String teacher,String course_name,int file_number){
+	public HomeWork(String stu_id,String teacher,String course_name){
 		this.stu_id =stu_id;
-		this.file_name =file_name;
-		this.file_size =file_size;
-		this.file_time = file_time;	
+		this.teacher_name = teacher;
+		this.course_name = course_name;
+	}
+	public HomeWork(int work_number,String teacher,String course_name){
+		this.file_number =work_number;
+		this.teacher_name = teacher;
+		this.course_name = course_name;
+	}
+	public HomeWork(String stu_id,String course_name,int work_number){
+		this.file_number =work_number;
+		this.stu_id =stu_id;
+		this.course_name = course_name;
+	}
+	public HomeWork(String stu_id,String teacher,String course_name,int file_number,String submit_state){
+		this.stu_id =stu_id;
 		this.file_number = file_number; 
 		this.teacher_name = teacher;
 		this.course_name = course_name;
+		this.submit_state =submit_state;
+	}
+	
+	public HomeWork(String number, String filename, String filesize,
+			Timestamp sendtime, String name, String course, int work_int) {
+		// TODO Auto-generated constructor stub
+		this.stu_id =number;
+		this.file_name =filename;
+		this.file_size =filesize;
+		this.file_time = sendtime;
+		this.teacher_name = name;
+		this.course_name =course;
+		this.file_number = work_int;
+	}
+	public String getSubmit_state() {
+		return submit_state;
+	}
+	public void setSubmit_state(String submit_state) {
+		this.submit_state = submit_state;
+	}
+	public String getReceive_state() {
+		return receive_state;
+	}
+	public void setReceive_state(String receive_state) {
+		this.receive_state = receive_state;
 	}
 	public String getStu_id() {
 		return stu_id;

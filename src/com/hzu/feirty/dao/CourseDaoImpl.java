@@ -93,6 +93,19 @@ public class CourseDaoImpl extends BaseDaoImpl{
 	}
 	
 	//查找
+	public String queryState(String name,String tea_name,int work_number) throws SQLException{
+		conn = this.getConnection();
+		pstmt = conn.prepareStatement("select state from course where name='" + name + "'and tea_name='"+tea_name+"'" +
+				"and works_number='"+work_number+"'");
+		rs = pstmt.executeQuery();
+		if (rs.next()) {
+			String state = rs.getString("state");
+			return state;
+		}else {
+			return null;
+		}
+	}
+	//查找
 	public boolean find2(String name,String tea_name) throws SQLException{
 		conn = this.getConnection();
 		pstmt = conn.prepareStatement("select * from course where name='" + name + "'and tea_name='"+tea_name+"'");

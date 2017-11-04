@@ -12,7 +12,7 @@ public class PraseMimeMessage{
 	private String saveAttachPath="";//附件下载后的存放目录
 	private StringBuffer bodytext= new StringBuffer();
 	//存放邮件内容的StringBuffer对象
-	private String dateformat="yyyy-MM-dd HH:mm";//默认的日前显示格式
+	private String dateformat="yy-MM-dd HH:mm";//默认的日前显示格式
 
 
 /**
@@ -357,23 +357,10 @@ public String getAttachPath(){
 
 
 private void saveFile(String fileName,InputStream in)throws Exception{
-	String osName = System.getProperty("os.name");
+	String separator = System.getProperty("file.separator");
 	String storedir = getAttachPath();
-	String separator = "";
-	if(osName == null) osName="";
-	if(osName.toLowerCase().indexOf("win") != -1){
-		separator="\\";
-		if(storedir == null || storedir.equals("")) 
-			storedir="c:\\tmp";
-		}else{
-			separator = "/";
-			storedir = "/tmp";
-		}
 	File storefile = new File(storedir+separator+fileName);
 	System.out.println("storefile's path: "+storefile.toString());
-	//for(int i=0;storefile.exists();i++){
-	//storefile = new File(storedir+separator+fileName+i);
-	//}
 	BufferedOutputStream bos = null;
 	BufferedInputStream  bis = null;
 	try{

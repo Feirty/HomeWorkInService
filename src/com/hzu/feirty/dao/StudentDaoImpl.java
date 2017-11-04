@@ -125,7 +125,29 @@ public class StudentDaoImpl extends BaseDaoImpl {
 
 		}
 		return null;
-
+	}
+	/**
+	 * 查询某用户是否存在，根据usename
+	 *
+	 * @return
+	 */
+	public String queryNumber(String name,String course) {
+		conn = this.getConnection();
+		try {
+			pstmt = conn.prepareStatement("select number from student where name='"
+					+ name + "' and course='"+course+"'");
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				String number =rs.getString("number");
+				return number;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			this.closeAll(rs, pstmt, conn);
+		}
+		return null;
 	}
 	/**
 	 * 查询某用户是否存在，根据teacher
@@ -213,6 +235,15 @@ public class StudentDaoImpl extends BaseDaoImpl {
 			   list.add(rs.getString("teacher"));
 		}
 		return list;
+	}
+	public String QueryTeacher_name(String name,String course) throws SQLException{
+		conn = this.getConnection();
+		pstmt = conn.prepareStatement("select teacher from student where name='"+name+"' and course='"+course+"'");
+		rs = pstmt.executeQuery();
+		while(rs.next()){			 
+			   return rs.getString("teacher");
+		}
+		return null;
 	}
 
 	

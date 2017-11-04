@@ -2,6 +2,7 @@ package com.hzu.feirty.contorl;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,11 +23,13 @@ import com.hzu.feirty.dao.EmailDaoImpl;
 import com.hzu.feirty.dao.HomeWorkDaoImpl;
 import com.hzu.feirty.dao.StudentDaoImpl;
 import com.hzu.feirty.dao.TeacherDaoImpl;
+import com.hzu.feirty.dao.WorkMadeDaoImpl;
 import com.hzu.feirty.entity.Course;
 import com.hzu.feirty.entity.Email;
 import com.hzu.feirty.entity.HomeWork;
 import com.hzu.feirty.entity.Student;
 import com.hzu.feirty.entity.Teacher;
+import com.hzu.feirty.entity.WorkMade;
 import com.hzu.feirty.utils.ConnUtil;
 import com.hzu.feirty.utils.GetFileSize;
 import com.hzu.feirty.utils.IOUtil;
@@ -143,6 +146,8 @@ public class MailReceive {
                  		String workString = str.substring(str.length()-1);
                  		if(course.equals(course1)&& work_number.equals(workString)&&new StudentDaoImpl().isExit(name,number,course1)){
                  			if(pmm.isContainAttach((Part)messages[i])){
+                 				HomeWork homework = new HomeWork(number,name,course,Integer.parseInt(work_number),"已提交");
+                 				new HomeWorkDaoImpl().save(homework);
                  				a++;               				
                  			}                                 			
                  		}            	
@@ -196,9 +201,11 @@ public class MailReceive {
                  		String workString = str.substring(str.length()-1);
                  		if(course.equals(course1)&& work_number.equals(workString)&&new StudentDaoImpl().isExit(tea_name,number,course1)){
                  			if(pmm.isContainAttach((Part)messages[i])){
+                 				HomeWork homework = new HomeWork(number,name,course,Integer.parseInt(work_number),"已提交");
+                 				new HomeWorkDaoImpl().save(homework);           				
                  				a++;
                  				if(number.equals(stu_number)){
-                 					submit ="你的作业已提交成功";                					
+                 					submit ="你的作业已提交成功";             					
                  				}
                  			}                                 			
                  		}            	
@@ -308,22 +315,34 @@ public class MailReceive {
              		String sub = pmm.getSubject();
              		String subject = sub.substring(sub.indexOf("]")+1);
              		String work_String = subject.substring(subject.indexOf("-") + 1, subject.indexOf(":"));
-             		if(new ConstructionDaoImpl().queryNumber(tea_name, stu_course, work_String)){
-             			mail.setReceive_state("状态:已收取");
+             		String receive_state = new WorkMadeDaoImpl().queryState(course, tea_name, Integer.parseInt(work_String));
+             		String stu_id=new StudentDaoImpl().queryNumber(name, course);
+             		HomeWork homeWork = new HomeWork(stu_id,course,Integer.parseInt(work_String));  
+             		if(new HomeWorkDaoImpl().querySubmit_state(homeWork)){
+             			mail.setSubmit_state("你的作业已提交");         
              		}else{
-             			mail.setReceive_state("状态:未收取");
-             		}
+             			mail.setSubmit_state("你的作业未提交"); 
+             		}           
              		Map<String, String> map =getWorksNumberS(name,stu_course,work_String);
              		String work_number =map.get("work_number");
-             		String submit_state = map.get("submit_state");
+             		//String submit_state = map.get("submit_state");
 	            	mail.setSubject(subject);
 	            	pmm.getMailContent((Part)messages[i]);        
 	            	mail.setContent(pmm.getBodyText());
 	            	mail.setCourse(course);
+	            	mail.setReceive_state(receive_state);
 	            	mail.setWork_number(""+work_number);
-	            	mail.setSubmit_state(submit_state);
-	            	pmm.setDateFormat("yy.MM.dd-HH:mm");
-	            	mail.setSentdata(pmm.getSentDate());  
+	            	//mail.setSubmit_state(submit_state);
+	            	pmm.setDateFormat("yy.MM.dd");
+	            	mail.setSentdata(pmm.getSentDate());
+	            	SimpleDateFormat sdf = new SimpleDateFormat("yy.MM.dd");
+	            	String updatetimestr =sdf.format(new Date());
+					java.util.Date da2 = sdf.parse(updatetimestr);
+					java.sql.Timestamp update_time = new java.sql.Timestamp(da2.getTime());
+					mail.setUpdate_time(updatetimestr);
+					WorkMade workmade = new WorkMade(tea_name, course, Integer.parseInt(work_String), work_number, update_time);
+					new WorkMadeDaoImpl().changeUpdateTimeAndSbmitteds(workmade);
+					//更新提交作业的人数、更新刷新时间、更新个人作业提交状态、更新收取状态
 	            	//EmailDaoImpl eDaoImpl =new EmailDaoImpl();
 	            	//eDaoImpl.Insert(mail);
 	                mailList.add(mail);// 添加到邮件列表中
@@ -364,17 +383,25 @@ public class MailReceive {
              		String course = str.substring(str.indexOf(":") + 1, str.indexOf("]"));
              		String sub = pmm.getSubject();
              		String subject = sub.substring(sub.indexOf("]")+1);
-             		String work_String = subject.substring(subject.indexOf("-") + 1, subject.indexOf(":"));
-             		int work_number =getWorksNumber(name, course, work_String);
+             		String work_times = subject.substring(subject.indexOf("-") + 1, subject.indexOf(":"));
+             		int work_number =getWorksNumber(name, course, work_times);
+             		String receive_state = new WorkMadeDaoImpl().queryState(course, name, work_number);
+             		mail.setReceive_state(receive_state);
 	            	mail.setSubject(subject);
 	            	pmm.getMailContent((Part)messages[i]);        
 	            	mail.setContent(pmm.getBodyText());
 	            	mail.setCourse(course);
 	            	mail.setWork_number(""+work_number);
-	            	pmm.setDateFormat("yy.MM.dd-HH:mm");
-	            	mail.setSentdata(pmm.getSentDate());          
-	            	//EmailDaoImpl eDaoImpl =new EmailDaoImpl();
-	            	//eDaoImpl.Insert(mail);
+	            	pmm.setDateFormat("yy-MM-dd");
+	            	mail.setSentdata(pmm.getSentDate()); 
+	            	SimpleDateFormat sdf = new SimpleDateFormat("yy.MM.dd");
+	            	String updatetimestr =sdf.format(new Date());
+					java.util.Date da2 = sdf.parse(updatetimestr);
+					java.sql.Timestamp update_time = new java.sql.Timestamp(da2.getTime());
+					mail.setUpdate_time(updatetimestr);
+					//更新提交作业的人数，更新时间	
+					WorkMade workmade = new WorkMade(name, course, Integer.parseInt(work_times), work_number, update_time);
+					new WorkMadeDaoImpl().changeUpdateTimeAndSbmitteds(workmade);
 	                mailList.add(mail);// 添加到邮件列表中
              	}
             }
@@ -387,6 +414,7 @@ public class MailReceive {
 	 */
 
 	public static int  getAllMailByTeacher2(String name,String course,String work_number,String docsPath) throws Exception{
+		String separator = System.getProperty("file.separator");
 		List<Email> mailList = new ArrayList<Email>();
 		TeacherDaoImpl tDao = new TeacherDaoImpl();
 		String number="";
@@ -440,15 +468,15 @@ public class MailReceive {
 	                			pmm.saveAttachMent((Part)messages[i]);
 	                			//得到文件名
 	                			String filename =pmm.getFilename();
-	                			File path = new File(file.toString()+"\\"+filename);
+	                			File path = new File(file.toString()+separator+filename);
 	                			//计算作业文件大小
 	                			GetFileSize getFileSize = new GetFileSize();
 	                			String filesize =getFileSize.FormetFileSize(getFileSize.getFileSizes(path));         			           		
 	                			//将作业得学号、文件名、文件大小、发送时间存入homework表中
-	                			int work_int = Integer.parseInt(work_number);
+	                			/*int work_int = Integer.parseInt(work_number);
 	                			HomeWorkDaoImpl HomeWorkDaoImpl = new HomeWorkDaoImpl();
-	                			HomeWork homework =new HomeWork(mail_id,number,filename,filesize,sendtime,name,course,work_int);
-	                			HomeWorkDaoImpl.inSert(homework);
+	                			HomeWork homework =new HomeWork(number,filename,filesize,sendtime,name,course,work_int);
+	                			HomeWorkDaoImpl.updateData(homework);*/
 	                			shu++;
 	                		}
                  		}             		
